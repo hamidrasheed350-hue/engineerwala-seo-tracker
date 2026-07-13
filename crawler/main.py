@@ -12,7 +12,9 @@ CONFIG_FILE = "config.json"
 
 
 def load_config():
-    """config.json se website settings read karta hai."""
+    """
+    config.json file se website ki settings read karta hai.
+    """
     with open(CONFIG_FILE, "r", encoding="utf-8") as file:
         return json.load(file)
 
@@ -54,8 +56,15 @@ def is_internal_url(url):
     Sirf EngineerWala domain ki valid internal URLs allow karta hai.
     """
     parsed_url = urlparse(url)
-    base_domain = urlparse(BASE_URL).netloc.replace("www.", "")
-    current_domain = parsed_url.netloc.replace("www.", "")
+
+    base_domain = urlparse(
+        BASE_URL
+    ).netloc.replace("www.", "")
+
+    current_domain = parsed_url.netloc.replace(
+        "www.",
+        ""
+    )
 
     if current_domain != base_domain:
         return False
@@ -63,13 +72,18 @@ def is_internal_url(url):
     if "/wp-content/uploads/" in parsed_url.path:
         return False
 
-    return parsed_url.scheme in {"http", "https"}
+    return parsed_url.scheme in {
+        "http",
+        "https"
+    }
 
 
 def get_wordpress_urls(api_url, source_name):
     """
     WordPress REST API se tamam published URLs collect karta hai.
-    Pagination handle karta hai taa-ke sirf pehli 10 posts na aayen.
+
+    Pagination handle hoti hai taa-ke sirf pehli 10 posts
+    ya pages collect na hon.
     """
     collected_urls = []
     page_number = 1
@@ -93,6 +107,7 @@ def get_wordpress_urls(api_url, source_name):
                 break
 
             response.raise_for_status()
+
             items = response.json()
 
             if not items:
@@ -117,8 +132,9 @@ def get_wordpress_urls(api_url, source_name):
             )
 
             print(
-                f"{source_name}: page {page_number} "
-                f"of {total_pages} fetched"
+                f"{source_name}: "
+                f"page {page_number} of "
+                f"{total_pages} fetched"
             )
 
             if page_number >= total_pages:
@@ -127,11 +143,17 @@ def get_wordpress_urls(api_url, source_name):
             page_number += 1
 
         except requests.RequestException as error:
-            print(f"{source_name} API error: {error}")
+            print(
+                f"{source_name} API error: "
+                f"{error}"
+            )
             break
 
         except ValueError as error:
-            print(f"{source_name} JSON error: {error}")
+            print(
+                f"{source_name} JSON error: "
+                f"{error}"
+            )
             break
 
     return collected_urls
@@ -139,17 +161,20 @@ def get_wordpress_urls(api_url, source_name):
 
 def read_sitemap(sitemap_url, visited=None):
     """
-    Sitemap index aur child sitemaps se tamam URLs collect karta hai.
+    Sitemap index aur uske child sitemaps se URLs collect karta hai.
     """
     if visited is None:
         visited = set()
 
-    sitemap_url = normalize_url(sitemap_url)
+    sitemap_url = normalize_url(
+        sitemap_url
+    )
 
     if sitemap_url in visited:
         return []
 
     visited.add(sitemap_url)
+
     collected_urls = []
 
     try:
@@ -157,18 +182,31 @@ def read_sitemap(sitemap_url, visited=None):
             sitemap_url,
             timeout=TIMEOUT
         )
+
         response.raise_for_status()
 
-        root = ET.fromstring(response.content)
-        root_name = root.tag.split("}")[-1]
+        root = ET.fromstring(
+            response.content
+        )
+
+        root_name = root.tag.split(
+            "}"
+        )[-1]
 
         if root_name == "sitemapindex":
             for element in root:
                 for child in element:
-                    tag_name = child.tag.split("}")[-1]
+                    tag_name = child.tag.split(
+                        "}"
+                    )[-1]
 
-                    if tag_name == "loc" and child.text:
-                        child_sitemap = child.text.strip()
+                    if (
+                        tag_name == "loc"
+                        and child.text
+                    ):
+                        child_sitemap = (
+                            child.text.strip()
+                        )
 
                         collected_urls.extend(
                             read_sitemap(
@@ -180,23 +218,39 @@ def read_sitemap(sitemap_url, visited=None):
         elif root_name == "urlset":
             for element in root:
                 for child in element:
-                    tag_name = child.tag.split("}")[-1]
+                    tag_name = child.tag.split(
+                        "}"
+                    )[-1]
 
-                    if tag_name == "loc" and child.text:
+                    if (
+                        tag_name == "loc"
+                        and child.text
+                    ):
                         collected_urls.append(
                             (
-                                normalize_url(child.text),
+                                normalize_url(
+                                    child.text
+                                ),
                                 "Sitemap"
                             )
                         )
 
-        print(f"Sitemap checked: {sitemap_url}")
+        print(
+            f"Sitemap checked: "
+            f"{sitemap_url}"
+        )
 
     except requests.RequestException as error:
-        print(f"Sitemap request error: {error}")
+        print(
+            f"Sitemap request error: "
+            f"{error}"
+        )
 
     except ET.ParseError as error:
-        print(f"Sitemap XML error: {error}")
+        print(
+            f"Sitemap XML error: "
+            f"{error}"
+        )
 
     return collected_urls
 
@@ -204,7 +258,8 @@ def read_sitemap(sitemap_url, visited=None):
 def remove_duplicates(url_records):
     """
     Duplicate URLs remove karta hai.
-    WordPress source ko Sitemap source par priority deta hai.
+
+    WordPress API source ko Sitemap source par priority deta hai.
     """
     unique_urls = {}
 
@@ -218,12 +273,14 @@ def remove_duplicates(url_records):
         elif unique_urls[url] == "Sitemap":
             unique_urls[url] = source
 
-    return sorted(unique_urls.items())
+    return sorted(
+        unique_urls.items()
+    )
 
 
 def save_urls(url_records):
     """
-    Final URL list ko data/urls.csv mein save karta hai.
+    Final unique URL list ko data/urls.csv mein save karta hai.
     """
     os.makedirs(
         OUTPUT_DIRECTORY,
@@ -255,13 +312,60 @@ def save_urls(url_records):
             ])
 
     print("--------------------------------")
-    print(f"Total unique URLs: {len(url_records)}")
-    print(f"Saved file: {output_file}")
+
+    print(
+        f"Total unique URLs: "
+        f"{len(url_records)}"
+    )
+
+    print(
+        f"Saved file: "
+        f"{output_file}"
+    )
+
+
+def extract_page_title(soup):
+    """
+    HTML document se page title extract karta hai.
+    """
+    if not soup.title:
+        return ""
+
+    return soup.title.get_text(
+        " ",
+        strip=True
+    )
+
+
+def extract_meta_description(soup):
+    """
+    HTML document se meta description extract karta hai.
+    """
+    meta_tag = soup.find(
+        "meta",
+        attrs={
+            "name": lambda value: (
+                value
+                and value.lower() == "description"
+            )
+        }
+    )
+
+    if not meta_tag:
+        return ""
+
+    content = meta_tag.get(
+        "content",
+        ""
+    )
+
+    return content.strip()
 
 
 def crawl_page(url):
     """
-    Ek URL ko open karke status, final URL aur page title read karta hai.
+    Ek URL ko crawl karke basic page information return karta hai.
+
     Ek page fail hone par poora crawler stop nahi hota.
     """
     result = {
@@ -269,6 +373,7 @@ def crawl_page(url):
         "status_code": "",
         "final_url": url,
         "title": "",
+        "meta_description": "",
         "crawl_error": ""
     }
 
@@ -279,19 +384,26 @@ def crawl_page(url):
             allow_redirects=True
         )
 
-        result["status_code"] = response.status_code
-        result["final_url"] = response.url
+        result["status_code"] = (
+            response.status_code
+        )
+
+        result["final_url"] = (
+            response.url
+        )
 
         soup = BeautifulSoup(
             response.text,
             "html.parser"
         )
 
-        if soup.title:
-            result["title"] = soup.title.get_text(
-                " ",
-                strip=True
-            )
+        result["title"] = (
+            extract_page_title(soup)
+        )
+
+        result["meta_description"] = (
+            extract_meta_description(soup)
+        )
 
         print(
             f"Crawled: {url} | "
@@ -300,11 +412,23 @@ def crawl_page(url):
         )
 
     except requests.RequestException as error:
-        result["crawl_error"] = str(error)
+        result["crawl_error"] = str(
+            error
+        )
 
         print(
             f"Crawl failed: {url} | "
             f"Error: {error}"
+        )
+
+    except Exception as error:
+        result["crawl_error"] = (
+            f"HTML processing error: {error}"
+        )
+
+        print(
+            f"HTML processing failed: "
+            f"{url} | Error: {error}"
         )
 
     return result
@@ -317,17 +441,28 @@ def crawl_all_urls(url_records):
     crawl_results = []
 
     for url, source in url_records:
-        page_result = crawl_page(url)
+        page_result = crawl_page(
+            url
+        )
+
         page_result["source"] = source
-        crawl_results.append(page_result)
+
+        crawl_results.append(
+            page_result
+        )
 
     return crawl_results
 
 
 def save_basic_crawl(crawl_results):
     """
-    Crawl report ko data/basic_crawl.csv mein save karta hai.
+    Basic crawl report ko data/basic_crawl.csv mein save karta hai.
     """
+    os.makedirs(
+        OUTPUT_DIRECTORY,
+        exist_ok=True
+    )
+
     output_file = os.path.join(
         OUTPUT_DIRECTORY,
         "basic_crawl.csv"
@@ -339,6 +474,7 @@ def save_basic_crawl(crawl_results):
         "status_code",
         "final_url",
         "title",
+        "meta_description",
         "crawl_error"
     ]
 
@@ -354,7 +490,10 @@ def save_basic_crawl(crawl_results):
         )
 
         writer.writeheader()
-        writer.writerows(crawl_results)
+
+        writer.writerows(
+            crawl_results
+        )
 
     print(
         f"Basic crawl report saved: "
@@ -364,10 +503,11 @@ def save_basic_crawl(crawl_results):
 
 def main():
     """
-    URL collection aur basic crawling process run karta hai.
+    URL collection aur basic page crawling process run karta hai.
     """
     print(
-        "EngineerWala URL collection started..."
+        "EngineerWala URL collection "
+        "started..."
     )
 
     all_urls = []
@@ -376,18 +516,27 @@ def main():
         POSTS_API,
         "WordPress Post"
     )
-    all_urls.extend(post_urls)
+
+    all_urls.extend(
+        post_urls
+    )
 
     page_urls = get_wordpress_urls(
         PAGES_API,
         "WordPress Page"
     )
-    all_urls.extend(page_urls)
+
+    all_urls.extend(
+        page_urls
+    )
 
     sitemap_urls = read_sitemap(
         SITEMAP_URL
     )
-    all_urls.extend(sitemap_urls)
+
+    all_urls.extend(
+        sitemap_urls
+    )
 
     unique_urls = remove_duplicates(
         all_urls
