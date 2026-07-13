@@ -37,11 +37,16 @@ jobs:
           git add data/urls.csv
           git add data/basic_crawl.csv
           git add data/latest_audit.csv
+          git add data/latest_audit.json
           git add data/issues.csv
+          git add data/critical_issues.csv
+          git add data/high_issues.csv
+          git add data/medium_issues.csv
+          git add data/low_issues.csv
 
           if git diff --cached --quiet; then
             echo "Reports mein koi naya change nahi mila."
           else
-            git commit -m "Update website SEO audit reports"
+            git commit -m "Update complete SEO audit reports"
             git push
           fi
