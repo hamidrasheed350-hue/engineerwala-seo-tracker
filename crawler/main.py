@@ -12,9 +12,7 @@ CONFIG_FILE = "config.json"
 
 
 def load_config():
-    """
-    config.json file se website ki settings read karta hai.
-    """
+    """config.json se website settings read karta hai."""
     with open(CONFIG_FILE, "r", encoding="utf-8") as file:
         return json.load(file)
 
@@ -40,9 +38,7 @@ SESSION.headers.update(HEADERS)
 
 
 def normalize_url(url):
-    """
-    URL se fragment remove karke clean URL return karta hai.
-    """
+    """URL se fragment remove karke clean URL return karta hai."""
     clean_url, _ = urldefrag(url.strip())
 
     if clean_url.endswith("/") and clean_url != BASE_URL + "/":
@@ -52,9 +48,7 @@ def normalize_url(url):
 
 
 def is_internal_url(url):
-    """
-    Sirf EngineerWala domain ki valid internal URLs allow karta hai.
-    """
+    """Sirf EngineerWala domain ki valid URLs allow karta hai."""
     parsed_url = urlparse(url)
 
     base_domain = urlparse(
@@ -80,10 +74,8 @@ def is_internal_url(url):
 
 def get_wordpress_urls(api_url, source_name):
     """
-    WordPress REST API se tamam published URLs collect karta hai.
-
-    Pagination handle hoti hai taa-ke sirf pehli 10 posts
-    ya pages collect na hon.
+    WordPress API se tamam published URLs collect karta hai.
+    Pagination handle hoti hai.
     """
     collected_urls = []
     page_number = 1
@@ -107,7 +99,6 @@ def get_wordpress_urls(api_url, source_name):
                 break
 
             response.raise_for_status()
-
             items = response.json()
 
             if not items:
@@ -161,20 +152,17 @@ def get_wordpress_urls(api_url, source_name):
 
 def read_sitemap(sitemap_url, visited=None):
     """
-    Sitemap index aur uske child sitemaps se URLs collect karta hai.
+    Sitemap index aur child sitemaps se URLs collect karta hai.
     """
     if visited is None:
         visited = set()
 
-    sitemap_url = normalize_url(
-        sitemap_url
-    )
+    sitemap_url = normalize_url(sitemap_url)
 
     if sitemap_url in visited:
         return []
 
     visited.add(sitemap_url)
-
     collected_urls = []
 
     try:
@@ -189,24 +177,15 @@ def read_sitemap(sitemap_url, visited=None):
             response.content
         )
 
-        root_name = root.tag.split(
-            "}"
-        )[-1]
+        root_name = root.tag.split("}")[-1]
 
         if root_name == "sitemapindex":
             for element in root:
                 for child in element:
-                    tag_name = child.tag.split(
-                        "}"
-                    )[-1]
+                    tag_name = child.tag.split("}")[-1]
 
-                    if (
-                        tag_name == "loc"
-                        and child.text
-                    ):
-                        child_sitemap = (
-                            child.text.strip()
-                        )
+                    if tag_name == "loc" and child.text:
+                        child_sitemap = child.text.strip()
 
                         collected_urls.extend(
                             read_sitemap(
@@ -218,14 +197,9 @@ def read_sitemap(sitemap_url, visited=None):
         elif root_name == "urlset":
             for element in root:
                 for child in element:
-                    tag_name = child.tag.split(
-                        "}"
-                    )[-1]
+                    tag_name = child.tag.split("}")[-1]
 
-                    if (
-                        tag_name == "loc"
-                        and child.text
-                    ):
+                    if tag_name == "loc" and child.text:
                         collected_urls.append(
                             (
                                 normalize_url(
@@ -258,8 +232,7 @@ def read_sitemap(sitemap_url, visited=None):
 def remove_duplicates(url_records):
     """
     Duplicate URLs remove karta hai.
-
-    WordPress API source ko Sitemap source par priority deta hai.
+    WordPress source ko Sitemap source par priority deta hai.
     """
     unique_urls = {}
 
@@ -279,9 +252,7 @@ def remove_duplicates(url_records):
 
 
 def save_urls(url_records):
-    """
-    Final unique URL list ko data/urls.csv mein save karta hai.
-    """
+    """Final URLs ko data/urls.csv mein save karta hai."""
     os.makedirs(
         OUTPUT_DIRECTORY,
         exist_ok=True
@@ -312,22 +283,12 @@ def save_urls(url_records):
             ])
 
     print("--------------------------------")
-
-    print(
-        f"Total unique URLs: "
-        f"{len(url_records)}"
-    )
-
-    print(
-        f"Saved file: "
-        f"{output_file}"
-    )
+    print(f"Total unique URLs: {len(url_records)}")
+    print(f"Saved file: {output_file}")
 
 
 def extract_page_title(soup):
-    """
-    HTML document se page title extract karta hai.
-    """
+    """HTML se page title extract karta hai."""
     if not soup.title:
         return ""
 
@@ -338,9 +299,7 @@ def extract_page_title(soup):
 
 
 def extract_meta_description(soup):
-    """
-    HTML document se meta description extract karta hai.
-    """
+    """HTML se meta description extract karta hai."""
     meta_tag = soup.find(
         "meta",
         attrs={
@@ -362,22 +321,27 @@ def extract_meta_description(soup):
     return content.strip()
 
 
-def extract_canonical_url(soup, page_url):
-    """
-    HTML document se canonical URL extract karta hai.
+def canonical_rel_match(value):
+    """Canonical rel attribute identify karta hai."""
+    if not value:
+        return False
 
-    Relative canonical URL ko complete URL mein convert karta hai.
-    """
+    if isinstance(value, list):
+        return any(
+            str(item).lower() == "canonical"
+            for item in value
+        )
+
+    return "canonical" in str(
+        value
+    ).lower().split()
+
+
+def extract_canonical_url(soup, page_url):
+    """HTML se canonical URL extract karta hai."""
     canonical_tag = soup.find(
         "link",
-        rel=lambda value: (
-            value
-            and "canonical" in (
-                value
-                if isinstance(value, list)
-                else value.lower().split()
-            )
-        )
+        rel=canonical_rel_match
     )
 
     if not canonical_tag:
@@ -399,7 +363,7 @@ def extract_canonical_url(soup, page_url):
 
 def extract_robots_directives(soup):
     """
-    Robots aur Googlebot meta tags ki directives extract karta hai.
+    Robots aur Googlebot meta directives extract karta hai.
     """
     directives = []
 
@@ -435,8 +399,7 @@ def detect_noindex(
     x_robots_tag
 ):
     """
-    HTML meta robots aur HTTP X-Robots-Tag se
-    noindex status detect karta hai.
+    Meta robots aur X-Robots-Tag se noindex detect karta hai.
     """
     combined_directives = (
         f"{robots_directives} "
@@ -447,9 +410,7 @@ def detect_noindex(
 
 
 def count_headings(soup):
-    """
-    Page par total H1 aur H2 headings count karta hai.
-    """
+    """Page ke H1 aur H2 headings count karta hai."""
     h1_count = len(
         soup.find_all("h1")
     )
@@ -461,10 +422,43 @@ def count_headings(soup):
     return h1_count, h2_count
 
 
+def calculate_word_count(soup):
+    """
+    Scripts aur styling ko remove karke visible page text
+    ka basic word count calculate karta hai.
+    """
+    clean_soup = BeautifulSoup(
+        str(soup),
+        "html.parser"
+    )
+
+    unwanted_tags = clean_soup.find_all([
+        "script",
+        "style",
+        "noscript",
+        "template",
+        "svg"
+    ])
+
+    for tag in unwanted_tags:
+        tag.decompose()
+
+    visible_text = clean_soup.get_text(
+        " ",
+        strip=True
+    )
+
+    if not visible_text:
+        return 0
+
+    words = visible_text.split()
+
+    return len(words)
+
+
 def crawl_page(url):
     """
-    Ek URL ko crawl karke basic page information return karta hai.
-
+    Ek URL crawl karke page information return karta hai.
     Ek page fail hone par poora crawler stop nahi hota.
     """
     result = {
@@ -479,6 +473,7 @@ def crawl_page(url):
         "is_noindex": False,
         "h1_count": 0,
         "h2_count": 0,
+        "word_count": 0,
         "crawl_error": ""
     }
 
@@ -542,12 +537,17 @@ def crawl_page(url):
         result["h1_count"] = h1_count
         result["h2_count"] = h2_count
 
+        result["word_count"] = (
+            calculate_word_count(soup)
+        )
+
         print(
             f"Crawled: {url} | "
             f"Status: {response.status_code} | "
             f"Noindex: {result['is_noindex']} | "
             f"H1: {h1_count} | "
             f"H2: {h2_count} | "
+            f"Words: {result['word_count']} | "
             f"Title: {result['title']}"
         )
 
@@ -575,9 +575,7 @@ def crawl_page(url):
 
 
 def crawl_all_urls(url_records):
-    """
-    Saari collected URLs ko aik aik karke crawl karta hai.
-    """
+    """Saari URLs ko aik aik karke crawl karta hai."""
     crawl_results = []
 
     for url, source in url_records:
@@ -596,7 +594,7 @@ def crawl_all_urls(url_records):
 
 def save_basic_crawl(crawl_results):
     """
-    Basic crawl report ko data/basic_crawl.csv mein save karta hai.
+    Crawl report ko data/basic_crawl.csv mein save karta hai.
     """
     os.makedirs(
         OUTPUT_DIRECTORY,
@@ -621,6 +619,7 @@ def save_basic_crawl(crawl_results):
         "is_noindex",
         "h1_count",
         "h2_count",
+        "word_count",
         "crawl_error"
     ]
 
@@ -648,9 +647,7 @@ def save_basic_crawl(crawl_results):
 
 
 def main():
-    """
-    URL collection aur basic page crawling process run karta hai.
-    """
+    """URL collection aur crawling process run karta hai."""
     print(
         "EngineerWala URL collection "
         "started..."
