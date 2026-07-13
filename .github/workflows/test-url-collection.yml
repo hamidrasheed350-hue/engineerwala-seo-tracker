@@ -23,19 +23,25 @@ jobs:
       - name: Install required packages
         run: pip install -r requirements.txt
 
-      - name: Run URL collector
+      - name: Run website crawler
         run: python crawler/main.py
 
-      - name: Save URL report in repository
+      - name: Run SEO rules audit
+        run: python crawler/run_seo_audit.py
+
+      - name: Save reports in repository
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
 
-          git add data/urls.csv data/basic_crawl.csv
-          
+          git add data/urls.csv
+          git add data/basic_crawl.csv
+          git add data/latest_audit.csv
+          git add data/issues.csv
+
           if git diff --cached --quiet; then
-            echo "URL list mein koi change nahi mila."
+            echo "Reports mein koi naya change nahi mila."
           else
-            git commit -m "Generate website URL list"
+            git commit -m "Update website SEO audit reports"
             git push
           fi
