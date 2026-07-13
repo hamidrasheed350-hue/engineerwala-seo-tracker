@@ -362,6 +362,21 @@ def extract_meta_description(soup):
     return content.strip()
 
 
+def count_headings(soup):
+    """
+    Page par total H1 aur H2 headings count karta hai.
+    """
+    h1_count = len(
+        soup.find_all("h1")
+    )
+
+    h2_count = len(
+        soup.find_all("h2")
+    )
+
+    return h1_count, h2_count
+
+
 def crawl_page(url):
     """
     Ek URL ko crawl karke basic page information return karta hai.
@@ -374,6 +389,8 @@ def crawl_page(url):
         "final_url": url,
         "title": "",
         "meta_description": "",
+        "h1_count": 0,
+        "h2_count": 0,
         "crawl_error": ""
     }
 
@@ -405,9 +422,18 @@ def crawl_page(url):
             extract_meta_description(soup)
         )
 
+        h1_count, h2_count = count_headings(
+            soup
+        )
+
+        result["h1_count"] = h1_count
+        result["h2_count"] = h2_count
+
         print(
             f"Crawled: {url} | "
             f"Status: {response.status_code} | "
+            f"H1: {h1_count} | "
+            f"H2: {h2_count} | "
             f"Title: {result['title']}"
         )
 
@@ -475,6 +501,8 @@ def save_basic_crawl(crawl_results):
         "final_url",
         "title",
         "meta_description",
+        "h1_count",
+        "h2_count",
         "crawl_error"
     ]
 
