@@ -29,6 +29,9 @@ jobs:
       - name: Run SEO rules audit
         run: python crawler/run_seo_audit.py
 
+      - name: Run change tracker
+        run: python crawler/change_tracker.py
+
       - name: Save reports in repository
         run: |
           git config user.name "github-actions[bot]"
@@ -43,10 +46,12 @@ jobs:
           git add data/high_issues.csv
           git add data/medium_issues.csv
           git add data/low_issues.csv
+          git add data/previous_audit.csv
+          git add data/change_log.csv
 
           if git diff --cached --quiet; then
             echo "Reports mein koi naya change nahi mila."
           else
-            git commit -m "Update complete SEO audit reports"
+            git commit -m "Update SEO audit and change tracking reports"
             git push
           fi
