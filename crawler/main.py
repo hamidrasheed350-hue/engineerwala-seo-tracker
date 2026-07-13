@@ -366,8 +366,7 @@ def extract_canonical_url(soup, page_url):
     """
     HTML document se canonical URL extract karta hai.
 
-    Relative canonical URL ko complete absolute URL mein
-    convert karta hai.
+    Relative canonical URL ko complete URL mein convert karta hai.
     """
     canonical_tag = soup.find(
         "link",
@@ -398,6 +397,55 @@ def extract_canonical_url(soup, page_url):
     )
 
 
+def extract_robots_directives(soup):
+    """
+    Robots aur Googlebot meta tags ki directives extract karta hai.
+    """
+    directives = []
+
+    for meta_tag in soup.find_all("meta"):
+        meta_name = meta_tag.get(
+            "name",
+            ""
+        ).strip().lower()
+
+        if meta_name not in {
+            "robots",
+            "googlebot"
+        }:
+            continue
+
+        content = meta_tag.get(
+            "content",
+            ""
+        ).strip()
+
+        if content:
+            directives.append(
+                f"{meta_name}: {content}"
+            )
+
+    return " | ".join(
+        directives
+    )
+
+
+def detect_noindex(
+    robots_directives,
+    x_robots_tag
+):
+    """
+    HTML meta robots aur HTTP X-Robots-Tag se
+    noindex status detect karta hai.
+    """
+    combined_directives = (
+        f"{robots_directives} "
+        f"{x_robots_tag}"
+    ).lower()
+
+    return "noindex" in combined_directives
+
+
 def count_headings(soup):
     """
     Page par total H1 aur H2 headings count karta hai.
@@ -426,6 +474,9 @@ def crawl_page(url):
         "title": "",
         "meta_description": "",
         "canonical_url": "",
+        "robots_directives": "",
+        "x_robots_tag": "",
+        "is_noindex": False,
         "h1_count": 0,
         "h2_count": 0,
         "crawl_error": ""
@@ -444,6 +495,13 @@ def crawl_page(url):
 
         result["final_url"] = (
             response.url
+        )
+
+        result["x_robots_tag"] = (
+            response.headers.get(
+                "X-Robots-Tag",
+                ""
+            ).strip()
         )
 
         soup = BeautifulSoup(
@@ -466,6 +524,17 @@ def crawl_page(url):
             )
         )
 
+        result["robots_directives"] = (
+            extract_robots_directives(
+                soup
+            )
+        )
+
+        result["is_noindex"] = detect_noindex(
+            result["robots_directives"],
+            result["x_robots_tag"]
+        )
+
         h1_count, h2_count = count_headings(
             soup
         )
@@ -476,9 +545,9 @@ def crawl_page(url):
         print(
             f"Crawled: {url} | "
             f"Status: {response.status_code} | "
+            f"Noindex: {result['is_noindex']} | "
             f"H1: {h1_count} | "
             f"H2: {h2_count} | "
-            f"Canonical: {result['canonical_url']} | "
             f"Title: {result['title']}"
         )
 
@@ -547,6 +616,9 @@ def save_basic_crawl(crawl_results):
         "title",
         "meta_description",
         "canonical_url",
+        "robots_directives",
+        "x_robots_tag",
+        "is_noindex",
         "h1_count",
         "h2_count",
         "crawl_error"
