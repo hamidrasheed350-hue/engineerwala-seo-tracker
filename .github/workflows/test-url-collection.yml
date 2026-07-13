@@ -32,6 +32,9 @@ jobs:
       - name: Run change tracker
         run: python crawler/change_tracker.py
 
+      - name: Test 404 status detection
+        run: python crawler/test_404.py
+
       - name: Save reports in repository
         run: |
           git config user.name "github-actions[bot]"
@@ -48,10 +51,11 @@ jobs:
           git add data/low_issues.csv
           git add data/previous_audit.csv
           git add data/change_log.csv
+          git add data/404_test.csv
 
           if git diff --cached --quiet; then
             echo "Reports mein koi naya change nahi mila."
           else
-            git commit -m "Update SEO audit and change tracking reports"
+            git commit -m "Update SEO reports and 404 test"
             git push
           fi
