@@ -463,9 +463,6 @@ def calculate_word_count(soup):
 def count_page_links(soup, page_url):
     """
     Page ke unique internal aur external links count karta hai.
-
-    Anchor, mailto, telephone aur JavaScript links
-    count nahi kiye jate.
     """
     internal_links = set()
     external_links = set()
@@ -537,6 +534,34 @@ def count_page_links(soup, page_url):
     )
 
 
+def count_images_and_missing_alt(soup):
+    """
+    Page ki total images aur missing/blank alt text count karta hai.
+    """
+    image_tags = soup.find_all("img")
+    missing_alt_count = 0
+
+    for image_tag in image_tags:
+        if not image_tag.has_attr("alt"):
+            missing_alt_count += 1
+            continue
+
+        alt_text = str(
+            image_tag.get(
+                "alt",
+                ""
+            )
+        ).strip()
+
+        if not alt_text:
+            missing_alt_count += 1
+
+    return (
+        len(image_tags),
+        missing_alt_count
+    )
+
+
 def crawl_page(url):
     """
     Ek URL crawl karke page information return karta hai.
@@ -557,6 +582,8 @@ def crawl_page(url):
         "word_count": 0,
         "internal_links_count": 0,
         "external_links_count": 0,
+        "image_count": 0,
+        "missing_alt_count": 0,
         "crawl_error": ""
     }
 
@@ -640,6 +667,21 @@ def crawl_page(url):
             external_links_count
         )
 
+        (
+            image_count,
+            missing_alt_count
+        ) = count_images_and_missing_alt(
+            soup
+        )
+
+        result["image_count"] = (
+            image_count
+        )
+
+        result["missing_alt_count"] = (
+            missing_alt_count
+        )
+
         print(
             f"Crawled: {url} | "
             f"Status: {response.status_code} | "
@@ -649,6 +691,8 @@ def crawl_page(url):
             f"Words: {result['word_count']} | "
             f"Internal links: {internal_links_count} | "
             f"External links: {external_links_count} | "
+            f"Images: {image_count} | "
+            f"Missing alt: {missing_alt_count} | "
             f"Title: {result['title']}"
         )
 
@@ -723,6 +767,8 @@ def save_basic_crawl(crawl_results):
         "word_count",
         "internal_links_count",
         "external_links_count",
+        "image_count",
+        "missing_alt_count",
         "crawl_error"
     ]
 
