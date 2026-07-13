@@ -1,0 +1,11 @@
+{
+  "website_name": "EngineerWala",
+  "base_url": "https://engineerwala.com",
+  "posts_api": "https://engineerwala.com/wp-json/wp/v2/posts",
+  "pages_api": "https://engineerwala.com/wp-json/wp/v2/pages",
+  "sitemap_url": "https://engineerwala.com/sitemap_index.xml",
+  "request_timeout": 30,
+  "crawl_delay_seconds": 1,
+  "user_agent": "EngineerWala-SEO-Tracker/1.0",
+  "output_directory": "data"
+}
