@@ -1,0 +1,41 @@
+name: Test URL Collection
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  collect-urls:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Download repository
+        uses: actions/checkout@v6
+
+      - name: Set up Python
+        uses: actions/setup-python@v6
+        with:
+          python-version: "3.13"
+          cache: "pip"
+
+      - name: Install required packages
+        run: pip install -r requirements.txt
+
+      - name: Run URL collector
+        run: python crawler/main.py
+
+      - name: Save URL report in repository
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+
+          git add data/urls.csv
+
+          if git diff --cached --quiet; then
+            echo "URL list mein koi change nahi mila."
+          else
+            git commit -m "Generate website URL list"
+            git push
+          fi
