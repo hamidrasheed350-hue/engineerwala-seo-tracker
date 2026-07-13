@@ -37,6 +37,11 @@ SESSION = requests.Session()
 SESSION.headers.update(HEADERS)
 
 
+def normalize_domain(domain):
+    """Domain se www remove karke lowercase return karta hai."""
+    return domain.lower().replace("www.", "")
+
+
 def normalize_url(url):
     """URL se fragment remove karke clean URL return karta hai."""
     clean_url, _ = urldefrag(url.strip())
@@ -51,13 +56,12 @@ def is_internal_url(url):
     """Sirf EngineerWala domain ki valid URLs allow karta hai."""
     parsed_url = urlparse(url)
 
-    base_domain = urlparse(
-        BASE_URL
-    ).netloc.replace("www.", "")
+    base_domain = normalize_domain(
+        urlparse(BASE_URL).netloc
+    )
 
-    current_domain = parsed_url.netloc.replace(
-        "www.",
-        ""
+    current_domain = normalize_domain(
+        parsed_url.netloc
     )
 
     if current_domain != base_domain:
@@ -305,7 +309,7 @@ def extract_meta_description(soup):
         attrs={
             "name": lambda value: (
                 value
-                and value.lower() == "description"
+                and str(value).lower() == "description"
             )
         }
     )
@@ -424,7 +428,7 @@ def count_headings(soup):
 
 def calculate_word_count(soup):
     """
-    Scripts aur styling ko remove karke visible page text
+    Scripts aur styling remove karke visible page text
     ka basic word count calculate karta hai.
     """
     clean_soup = BeautifulSoup(
@@ -456,6 +460,83 @@ def calculate_word_count(soup):
     return len(words)
 
 
+def count_page_links(soup, page_url):
+    """
+    Page ke unique internal aur external links count karta hai.
+
+    Anchor, mailto, telephone aur JavaScript links
+    count nahi kiye jate.
+    """
+    internal_links = set()
+    external_links = set()
+
+    website_domain = normalize_domain(
+        urlparse(BASE_URL).netloc
+    )
+
+    ignored_prefixes = (
+        "#",
+        "mailto:",
+        "tel:",
+        "javascript:",
+        "data:"
+    )
+
+    for link_tag in soup.find_all(
+        "a",
+        href=True
+    ):
+        href = link_tag.get(
+            "href",
+            ""
+        ).strip()
+
+        if not href:
+            continue
+
+        if href.lower().startswith(
+            ignored_prefixes
+        ):
+            continue
+
+        complete_url = urljoin(
+            page_url,
+            href
+        )
+
+        clean_url, _ = urldefrag(
+            complete_url
+        )
+
+        parsed_link = urlparse(
+            clean_url
+        )
+
+        if parsed_link.scheme not in {
+            "http",
+            "https"
+        }:
+            continue
+
+        link_domain = normalize_domain(
+            parsed_link.netloc
+        )
+
+        if link_domain == website_domain:
+            internal_links.add(
+                clean_url
+            )
+        else:
+            external_links.add(
+                clean_url
+            )
+
+    return (
+        len(internal_links),
+        len(external_links)
+    )
+
+
 def crawl_page(url):
     """
     Ek URL crawl karke page information return karta hai.
@@ -474,6 +555,8 @@ def crawl_page(url):
         "h1_count": 0,
         "h2_count": 0,
         "word_count": 0,
+        "internal_links_count": 0,
+        "external_links_count": 0,
         "crawl_error": ""
     }
 
@@ -541,6 +624,22 @@ def crawl_page(url):
             calculate_word_count(soup)
         )
 
+        (
+            internal_links_count,
+            external_links_count
+        ) = count_page_links(
+            soup,
+            response.url
+        )
+
+        result["internal_links_count"] = (
+            internal_links_count
+        )
+
+        result["external_links_count"] = (
+            external_links_count
+        )
+
         print(
             f"Crawled: {url} | "
             f"Status: {response.status_code} | "
@@ -548,6 +647,8 @@ def crawl_page(url):
             f"H1: {h1_count} | "
             f"H2: {h2_count} | "
             f"Words: {result['word_count']} | "
+            f"Internal links: {internal_links_count} | "
+            f"External links: {external_links_count} | "
             f"Title: {result['title']}"
         )
 
@@ -620,6 +721,8 @@ def save_basic_crawl(crawl_results):
         "h1_count",
         "h2_count",
         "word_count",
+        "internal_links_count",
+        "external_links_count",
         "crawl_error"
     ]
 
