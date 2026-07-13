@@ -243,7 +243,87 @@ def save_urls(url_records):
     print(f"Total unique URLs: {len(url_records)}")
     print(f"Saved file: {output_file}")
 
+def crawl_page(url):
+    """
+    Ek URL ko open karke basic crawl information return karta hai.
+    Agar ek page fail ho jaye to poora crawler stop nahi hota.
+    """
+    result = {
+        "url": url,
+        "status_code": "",
+        "final_url": url,
+        "crawl_error": ""
+    }
 
+    try:
+        response = SESSION.get(
+            url,
+            timeout=TIMEOUT,
+            allow_redirects=True
+        )
+
+        result["status_code"] = response.status_code
+        result["final_url"] = response.url
+
+        print(
+            f"Crawled: {url} | "
+            f"Status: {response.status_code}"
+        )
+
+    except requests.RequestException as error:
+        result["crawl_error"] = str(error)
+        print(f"Crawl failed: {url} | Error: {error}")
+
+    return result
+
+
+def crawl_all_urls(url_records):
+    """
+    Saari collected URLs ko crawl karta hai.
+    """
+    crawl_results = []
+
+    for url, source in url_records:
+        page_result = crawl_page(url)
+        page_result["source"] = source
+        crawl_results.append(page_result)
+
+    return crawl_results
+
+
+def save_basic_crawl(crawl_results):
+    """
+    Basic crawl report ko data/basic_crawl.csv mein save karta hai.
+    """
+    output_file = os.path.join(
+        OUTPUT_DIRECTORY,
+        "basic_crawl.csv"
+    )
+
+    fieldnames = [
+        "url",
+        "source",
+        "status_code",
+        "final_url",
+        "crawl_error"
+    ]
+
+    with open(
+        output_file,
+        "w",
+        newline="",
+        encoding="utf-8"
+    ) as file:
+        writer = csv.DictWriter(
+            file,
+            fieldnames=fieldnames
+        )
+
+        writer.writeheader()
+        writer.writerows(crawl_results)
+
+    print(f"Basic crawl report saved: {output_file}")
+    
 def main():
     print("EngineerWala URL collection started...")
 
@@ -267,7 +347,9 @@ def main():
     unique_urls = remove_duplicates(all_urls)
 
     save_urls(unique_urls)
-
+    
+    crawl_results = crawl_all_urls(unique_urls)
+    save_basic_crawl(crawl_results)
 
 if __name__ == "__main__":
     main()
