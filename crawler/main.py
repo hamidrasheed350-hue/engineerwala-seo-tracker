@@ -2,7 +2,7 @@ import csv
 import json
 import os
 import xml.etree.ElementTree as ET
-from urllib.parse import urldefrag, urlparse
+from urllib.parse import urldefrag, urljoin, urlparse
 
 import requests
 from bs4 import BeautifulSoup
@@ -362,6 +362,42 @@ def extract_meta_description(soup):
     return content.strip()
 
 
+def extract_canonical_url(soup, page_url):
+    """
+    HTML document se canonical URL extract karta hai.
+
+    Relative canonical URL ko complete absolute URL mein
+    convert karta hai.
+    """
+    canonical_tag = soup.find(
+        "link",
+        rel=lambda value: (
+            value
+            and "canonical" in (
+                value
+                if isinstance(value, list)
+                else value.lower().split()
+            )
+        )
+    )
+
+    if not canonical_tag:
+        return ""
+
+    canonical_href = canonical_tag.get(
+        "href",
+        ""
+    ).strip()
+
+    if not canonical_href:
+        return ""
+
+    return urljoin(
+        page_url,
+        canonical_href
+    )
+
+
 def count_headings(soup):
     """
     Page par total H1 aur H2 headings count karta hai.
@@ -389,6 +425,7 @@ def crawl_page(url):
         "final_url": url,
         "title": "",
         "meta_description": "",
+        "canonical_url": "",
         "h1_count": 0,
         "h2_count": 0,
         "crawl_error": ""
@@ -422,6 +459,13 @@ def crawl_page(url):
             extract_meta_description(soup)
         )
 
+        result["canonical_url"] = (
+            extract_canonical_url(
+                soup,
+                response.url
+            )
+        )
+
         h1_count, h2_count = count_headings(
             soup
         )
@@ -434,6 +478,7 @@ def crawl_page(url):
             f"Status: {response.status_code} | "
             f"H1: {h1_count} | "
             f"H2: {h2_count} | "
+            f"Canonical: {result['canonical_url']} | "
             f"Title: {result['title']}"
         )
 
@@ -501,6 +546,7 @@ def save_basic_crawl(crawl_results):
         "final_url",
         "title",
         "meta_description",
+        "canonical_url",
         "h1_count",
         "h2_count",
         "crawl_error"
