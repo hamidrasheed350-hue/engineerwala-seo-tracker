@@ -1,0 +1,41 @@
+name: Test Crawler Error Resilience
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  test-error-resilience:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Download repository
+        uses: actions/checkout@v6
+
+      - name: Set up Python
+        uses: actions/setup-python@v6
+        with:
+          python-version: "3.13"
+          cache: "pip"
+
+      - name: Install required packages
+        run: pip install -r requirements.txt
+
+      - name: Run crawler error resilience test
+        run: python crawler/test_error_resilience.py
+
+      - name: Save test report
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+
+          git add data/error_resilience_test.csv
+
+          if git diff --cached --quiet; then
+            echo "Test report mein koi change nahi mila."
+          else
+            git commit -m "Add crawler error resilience test report"
+            git push
+          fi
