@@ -1,0 +1,2 @@
+failed_url,failed_url_error,next_url,next_url_status,crawler_continued,test_passed
+http://127.0.0.1:1/seo-tracker-test,"HTTPConnectionPool(host='127.0.0.1', port=1): Max retries exceeded with url: /seo-tracker-test (Caused by NewConnectionError(""HTTPConnection(host='127.0.0.1', port=1): Failed to establish a new connection: [Errno 111] Connection refused""))",https://engineerwala.com/,200,True,True
