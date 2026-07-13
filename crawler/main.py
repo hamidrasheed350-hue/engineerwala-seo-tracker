@@ -5,6 +5,7 @@ import xml.etree.ElementTree as ET
 from urllib.parse import urldefrag, urlparse
 
 import requests
+from bs4 import BeautifulSoup
 
 
 CONFIG_FILE = "config.json"
@@ -37,7 +38,9 @@ SESSION.headers.update(HEADERS)
 
 
 def normalize_url(url):
-    """URL se fragment remove karke clean URL return karta hai."""
+    """
+    URL se fragment remove karke clean URL return karta hai.
+    """
     clean_url, _ = urldefrag(url.strip())
 
     if clean_url.endswith("/") and clean_url != BASE_URL + "/":
@@ -47,7 +50,9 @@ def normalize_url(url):
 
 
 def is_internal_url(url):
-    """Sirf EngineerWala domain ki URLs allow karta hai."""
+    """
+    Sirf EngineerWala domain ki valid internal URLs allow karta hai.
+    """
     parsed_url = urlparse(url)
     base_domain = urlparse(BASE_URL).netloc.replace("www.", "")
     current_domain = parsed_url.netloc.replace("www.", "")
@@ -63,8 +68,8 @@ def is_internal_url(url):
 
 def get_wordpress_urls(api_url, source_name):
     """
-    WordPress REST API se tamam URLs collect karta hai.
-    Pagination ki wajah se sirf pehli 10 posts tak limited nahi rahega.
+    WordPress REST API se tamam published URLs collect karta hai.
+    Pagination handle karta hai taa-ke sirf pehli 10 posts na aayen.
     """
     collected_urls = []
     page_number = 1
@@ -98,11 +103,17 @@ def get_wordpress_urls(api_url, source_name):
 
                 if url:
                     collected_urls.append(
-                        (normalize_url(url), source_name)
+                        (
+                            normalize_url(url),
+                            source_name
+                        )
                     )
 
             total_pages = int(
-                response.headers.get("X-WP-TotalPages", 1)
+                response.headers.get(
+                    "X-WP-TotalPages",
+                    1
+                )
             )
 
             print(
@@ -128,7 +139,7 @@ def get_wordpress_urls(api_url, source_name):
 
 def read_sitemap(sitemap_url, visited=None):
     """
-    Sitemap index aur uske child sitemaps se URLs collect karta hai.
+    Sitemap index aur child sitemaps se tamam URLs collect karta hai.
     """
     if visited is None:
         visited = set()
@@ -149,7 +160,6 @@ def read_sitemap(sitemap_url, visited=None):
         response.raise_for_status()
 
         root = ET.fromstring(response.content)
-
         root_name = root.tag.split("}")[-1]
 
         if root_name == "sitemapindex":
@@ -194,7 +204,7 @@ def read_sitemap(sitemap_url, visited=None):
 def remove_duplicates(url_records):
     """
     Duplicate URLs remove karta hai.
-    WordPress API source ko sitemap source par priority deta hai.
+    WordPress source ko Sitemap source par priority deta hai.
     """
     unique_urls = {}
 
@@ -212,8 +222,13 @@ def remove_duplicates(url_records):
 
 
 def save_urls(url_records):
-    """Final URL list ko data/urls.csv mein save karta hai."""
-    os.makedirs(OUTPUT_DIRECTORY, exist_ok=True)
+    """
+    Final URL list ko data/urls.csv mein save karta hai.
+    """
+    os.makedirs(
+        OUTPUT_DIRECTORY,
+        exist_ok=True
+    )
 
     output_file = os.path.join(
         OUTPUT_DIRECTORY,
@@ -243,15 +258,17 @@ def save_urls(url_records):
     print(f"Total unique URLs: {len(url_records)}")
     print(f"Saved file: {output_file}")
 
+
 def crawl_page(url):
     """
-    Ek URL ko open karke basic crawl information return karta hai.
-    Agar ek page fail ho jaye to poora crawler stop nahi hota.
+    Ek URL ko open karke status, final URL aur page title read karta hai.
+    Ek page fail hone par poora crawler stop nahi hota.
     """
     result = {
         "url": url,
         "status_code": "",
         "final_url": url,
+        "title": "",
         "crawl_error": ""
     }
 
@@ -265,21 +282,37 @@ def crawl_page(url):
         result["status_code"] = response.status_code
         result["final_url"] = response.url
 
+        soup = BeautifulSoup(
+            response.text,
+            "html.parser"
+        )
+
+        if soup.title:
+            result["title"] = soup.title.get_text(
+                " ",
+                strip=True
+            )
+
         print(
             f"Crawled: {url} | "
-            f"Status: {response.status_code}"
+            f"Status: {response.status_code} | "
+            f"Title: {result['title']}"
         )
 
     except requests.RequestException as error:
         result["crawl_error"] = str(error)
-        print(f"Crawl failed: {url} | Error: {error}")
+
+        print(
+            f"Crawl failed: {url} | "
+            f"Error: {error}"
+        )
 
     return result
 
 
 def crawl_all_urls(url_records):
     """
-    Saari collected URLs ko crawl karta hai.
+    Saari collected URLs ko aik aik karke crawl karta hai.
     """
     crawl_results = []
 
@@ -293,7 +326,7 @@ def crawl_all_urls(url_records):
 
 def save_basic_crawl(crawl_results):
     """
-    Basic crawl report ko data/basic_crawl.csv mein save karta hai.
+    Crawl report ko data/basic_crawl.csv mein save karta hai.
     """
     output_file = os.path.join(
         OUTPUT_DIRECTORY,
@@ -305,6 +338,7 @@ def save_basic_crawl(crawl_results):
         "source",
         "status_code",
         "final_url",
+        "title",
         "crawl_error"
     ]
 
@@ -322,10 +356,19 @@ def save_basic_crawl(crawl_results):
         writer.writeheader()
         writer.writerows(crawl_results)
 
-    print(f"Basic crawl report saved: {output_file}")
-    
+    print(
+        f"Basic crawl report saved: "
+        f"{output_file}"
+    )
+
+
 def main():
-    print("EngineerWala URL collection started...")
+    """
+    URL collection aur basic crawling process run karta hai.
+    """
+    print(
+        "EngineerWala URL collection started..."
+    )
 
     all_urls = []
 
@@ -341,15 +384,27 @@ def main():
     )
     all_urls.extend(page_urls)
 
-    sitemap_urls = read_sitemap(SITEMAP_URL)
+    sitemap_urls = read_sitemap(
+        SITEMAP_URL
+    )
     all_urls.extend(sitemap_urls)
 
-    unique_urls = remove_duplicates(all_urls)
+    unique_urls = remove_duplicates(
+        all_urls
+    )
 
-    save_urls(unique_urls)
-    
-    crawl_results = crawl_all_urls(unique_urls)
-    save_basic_crawl(crawl_results)
+    save_urls(
+        unique_urls
+    )
+
+    crawl_results = crawl_all_urls(
+        unique_urls
+    )
+
+    save_basic_crawl(
+        crawl_results
+    )
+
 
 if __name__ == "__main__":
     main()
