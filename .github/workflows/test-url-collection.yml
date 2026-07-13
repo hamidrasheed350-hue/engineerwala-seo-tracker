@@ -31,8 +31,8 @@ jobs:
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
 
-          git add data/urls.csv
-
+          git add data/urls.csv data/basic_crawl.csv
+          
           if git diff --cached --quiet; then
             echo "URL list mein koi change nahi mila."
           else
