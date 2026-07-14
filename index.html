@@ -734,6 +734,56 @@ tbody tr:hover {
         grid-template-columns: 1fr;
     }
 }
+
+/* PageSpeed */
+table.pagespeed {
+    min-width: 1550px;
+}
+
+.ps-score {
+    display: inline-block;
+    min-width: 42px;
+    padding: 5px 8px;
+    border-radius: 999px;
+    text-align: center;
+    font-size: 12px;
+    font-weight: 700;
+}
+
+.ps-score-good {
+    color: var(--green);
+    background: var(--green-bg);
+}
+
+.ps-score-medium {
+    color: var(--yellow);
+    background: var(--yellow-bg);
+}
+
+.ps-score-high,
+.ps-score-critical,
+.ps-score-failed {
+    color: var(--red);
+    background: var(--red-bg);
+}
+
+.ps-device {
+    display: inline-block;
+    padding: 4px 8px;
+    color: var(--cyan);
+    background: var(--cyan-bg);
+    border-radius: 999px;
+    font-size: 11px;
+    font-weight: 700;
+    text-transform: capitalize;
+}
+
+.ps-opportunities {
+    min-width: 300px;
+    max-width: 430px;
+    line-height: 1.45;
+}
+
 </style>
 </head>
 
@@ -766,6 +816,10 @@ tbody tr:hover {
 
             <button class="nav-button" data-page="index-status">
                 Index Status
+            </button>
+
+            <button class="nav-button" data-page="pagespeed">
+                Page Speed
             </button>
 
             <button class="nav-button" data-page="changes">
@@ -1467,6 +1521,138 @@ tbody tr:hover {
             </div>
         </section>
 
+
+        <section class="page" id="page-pagespeed">
+            <div class="page-header">
+                <div>
+                    <h1 class="page-title">
+                        Page Speed
+                    </h1>
+                    <p class="page-description">
+                        Mobile and desktop Lighthouse results for selected
+                        priority pages.
+                    </p>
+                </div>
+
+                <div
+                    class="last-updated"
+                    id="last-updated-pagespeed"
+                >
+                    Last updated: —
+                </div>
+            </div>
+
+            <div class="cards">
+                <article class="card info">
+                    <div class="card-label">
+                        Tested URLs
+                    </div>
+                    <div class="card-value" id="ps-tested">—</div>
+                    <div class="card-line"></div>
+                    <div class="card-note">
+                        Selected priority pages
+                    </div>
+                </article>
+
+                <article class="card success">
+                    <div class="card-label">
+                        Mobile Performance
+                    </div>
+                    <div class="card-value" id="ps-mobile">—</div>
+                    <div class="card-line"></div>
+                    <div class="card-note">
+                        Average Lighthouse score
+                    </div>
+                </article>
+
+                <article class="card success">
+                    <div class="card-label">
+                        Desktop Performance
+                    </div>
+                    <div class="card-value" id="ps-desktop">—</div>
+                    <div class="card-line"></div>
+                    <div class="card-note">
+                        Average Lighthouse score
+                    </div>
+                </article>
+
+                <article class="card danger">
+                    <div class="card-label">
+                        Failed Tests
+                    </div>
+                    <div class="card-value" id="ps-failed">—</div>
+                    <div class="card-line"></div>
+                    <div class="card-note">
+                        API or Lighthouse failures
+                    </div>
+                </article>
+            </div>
+
+            <div class="panel">
+                <div class="panel-header">
+                    <div>
+                        <div class="panel-title">
+                            PageSpeed Results
+                        </div>
+                        <div class="panel-note">
+                            Performance scores, lab metrics and improvement
+                            opportunities.
+                        </div>
+                    </div>
+
+                    <div
+                        class="panel-count"
+                        id="pagespeed-visible-count"
+                    >
+                        0 tests
+                    </div>
+                </div>
+
+                <div class="panel-body">
+                    <div class="filters three">
+                        <input
+                            type="search"
+                            id="pagespeed-search"
+                            placeholder="Search tested URL"
+                        >
+
+                        <select id="pagespeed-device">
+                            <option value="">
+                                All Devices
+                            </option>
+                            <option value="mobile">
+                                Mobile
+                            </option>
+                            <option value="desktop">
+                                Desktop
+                            </option>
+                        </select>
+
+                        <select id="pagespeed-score">
+                            <option value="">
+                                All Performance Scores
+                            </option>
+                            <option value="good">
+                                Good 90+
+                            </option>
+                            <option value="medium">
+                                Needs Review 50-89
+                            </option>
+                            <option value="failed">
+                                Failed
+                            </option>
+                        </select>
+                    </div>
+
+                    <div id="pagespeed-table-container">
+                        <div class="loading">
+                            Loading PageSpeed data...
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
         <section class="page" id="page-changes">
             <div class="page-header">
                 <div>
@@ -1752,7 +1938,9 @@ const PATHS = {
     gscSummary: "data/search_console_summary.json",
     gscPages: "data/search_console_pages.csv",
     inspectionSummary: "data/url_inspection_summary.json",
-    inspectionPages: "data/url_inspection.csv"
+    inspectionPages: "data/url_inspection.csv",
+    pagespeedSummary: "data/pagespeed_summary.json",
+    pagespeedResults: "data/pagespeed_results.csv"
 };
 
 let pages = [];
@@ -1763,6 +1951,8 @@ let gscSummary = {};
 let gscRows = [];
 let inspectionSummary = {};
 let inspectionRows = [];
+let pagespeedSummary = {};
+let pagespeedRows = [];
 let inspectionMap = new Map();
 let gscMap = new Map();
 
@@ -1784,7 +1974,9 @@ async function init() {
             searchSummaryResult,
             searchPageResult,
             inspectionSummaryResult,
-            inspectionPageResult
+            inspectionPageResult,
+            pagespeedSummaryResult,
+            pagespeedResult
         ] = await Promise.all([
             loadAudit(),
             loadCsv(PATHS.issues),
@@ -1792,7 +1984,9 @@ async function init() {
             loadJson(PATHS.gscSummary),
             loadCsv(PATHS.gscPages),
             loadJson(PATHS.inspectionSummary),
-            loadCsv(PATHS.inspectionPages)
+            loadCsv(PATHS.inspectionPages),
+            loadJson(PATHS.pagespeedSummary),
+            loadCsv(PATHS.pagespeedResults)
         ]);
 
         pages = auditResult.pages;
@@ -1804,6 +1998,10 @@ async function init() {
         inspectionSummary = inspectionSummaryResult || {};
         inspectionRows = inspectionPageResult.map(
             normalizeInspection
+        );
+        pagespeedSummary = pagespeedSummaryResult || {};
+        pagespeedRows = pagespeedResult.map(
+            normalizePageSpeed
         );
 
         inspectionMap = new Map(
@@ -1825,6 +2023,7 @@ async function init() {
         renderIssues();
         renderPerformance();
         renderInspection();
+        renderPageSpeed();
         renderChanges();
         renderSystem();
         renderDates();
@@ -1904,6 +2103,21 @@ function setupFilters() {
             "inspection-filter",
             "change",
             filterInspection
+        ],
+        [
+            "pagespeed-search",
+            "input",
+            filterPageSpeed
+        ],
+        [
+            "pagespeed-device",
+            "change",
+            filterPageSpeed
+        ],
+        [
+            "pagespeed-score",
+            "change",
+            filterPageSpeed
         ]
     ];
 
@@ -2526,6 +2740,44 @@ function normalizeInspection(row) {
         error: stringValue(
             row.error
         )
+    };
+}
+
+
+function normalizePageSpeed(row) {
+    return {
+        url: stringValue(row.url),
+        strategy: stringValue(row.strategy),
+        performance_score:
+            numberValue(row.performance_score),
+        accessibility_score:
+            numberValue(row.accessibility_score),
+        best_practices_score:
+            numberValue(row.best_practices_score),
+        seo_score:
+            numberValue(row.seo_score),
+        first_contentful_paint_ms:
+            numberValue(row.first_contentful_paint_ms),
+        largest_contentful_paint_ms:
+            numberValue(row.largest_contentful_paint_ms),
+        speed_index_ms:
+            numberValue(row.speed_index_ms),
+        total_blocking_time_ms:
+            numberValue(row.total_blocking_time_ms),
+        cumulative_layout_shift:
+            numberValue(row.cumulative_layout_shift),
+        server_response_time_ms:
+            numberValue(row.server_response_time_ms),
+        top_opportunities:
+            stringValue(row.top_opportunities),
+        final_url:
+            stringValue(row.final_url),
+        lighthouse_version:
+            stringValue(row.lighthouse_version),
+        checked_at:
+            stringValue(row.checked_at),
+        error:
+            stringValue(row.error)
     };
 }
 
@@ -3641,6 +3893,333 @@ function renderInspection() {
     );
 }
 
+
+function renderPageSpeed() {
+    setText(
+        "ps-tested",
+        pagespeedSummary.selected_urls ??
+        new Set(
+            pagespeedRows.map(row => row.url)
+        ).size
+    );
+
+    setText(
+        "ps-mobile",
+        pagespeedSummary.mobile
+            ?.average_performance_score ??
+        averagePageSpeedScore("mobile")
+    );
+
+    setText(
+        "ps-desktop",
+        pagespeedSummary.desktop
+            ?.average_performance_score ??
+        averagePageSpeedScore("desktop")
+    );
+
+    setText(
+        "ps-failed",
+        pagespeedSummary.failed_tests ??
+        pagespeedRows.filter(
+            row => Boolean(row.error)
+        ).length
+    );
+
+    const container = document.getElementById(
+        "pagespeed-table-container"
+    );
+
+    if (!pagespeedRows.length) {
+        container.innerHTML = emptyState(
+            "No PageSpeed data found.",
+            "Run the daily workflow again."
+        );
+
+        setText(
+            "pagespeed-visible-count",
+            "0 tests"
+        );
+
+        return;
+    }
+
+    container.innerHTML = `
+        <div class="table-wrap">
+            <table
+                class="pagespeed"
+                id="pagespeed-table"
+            >
+                <thead>
+                    <tr>
+                        <th>URL</th>
+                        <th>Device</th>
+                        <th>Performance</th>
+                        <th>Accessibility</th>
+                        <th>Best Practices</th>
+                        <th>SEO</th>
+                        <th>FCP</th>
+                        <th>LCP</th>
+                        <th>Speed Index</th>
+                        <th>TBT</th>
+                        <th>CLS</th>
+                        <th>Server</th>
+                        <th>Status</th>
+                        <th>Opportunities / Error</th>
+                    </tr>
+                </thead>
+
+                <tbody>
+                    ${
+                        pagespeedRows.map(row => {
+                            const health =
+                                pageSpeedHealth(row);
+
+                            return `
+                                <tr
+                                    data-search="${
+                                        escapeAttribute(
+                                            row.url.toLowerCase()
+                                        )
+                                    }"
+                                    data-device="${
+                                        escapeAttribute(
+                                            row.strategy
+                                        )
+                                    }"
+                                    data-health="${
+                                        escapeAttribute(
+                                            health
+                                        )
+                                    }"
+                                >
+                                    <td>
+                                        <a
+                                            class="url-link"
+                                            href="${
+                                                escapeAttribute(
+                                                    row.url
+                                                )
+                                            }"
+                                            target="_blank"
+                                            rel="noopener noreferrer"
+                                            title="${
+                                                escapeAttribute(
+                                                    row.url
+                                                )
+                                            }"
+                                        >
+                                            ${
+                                                escapeHtml(
+                                                    shortenUrl(
+                                                        row.url
+                                                    )
+                                                )
+                                            }
+                                        </a>
+                                    </td>
+
+                                    <td>
+                                        <span class="ps-device">
+                                            ${
+                                                escapeHtml(
+                                                    row.strategy ||
+                                                    "—"
+                                                )
+                                            }
+                                        </span>
+                                    </td>
+
+                                    <td>
+                                        <span
+                                            class="ps-score ps-score-${health}"
+                                        >
+                                            ${
+                                                row.error
+                                                    ? "Failed"
+                                                    : row.performance_score
+                                            }
+                                        </span>
+                                    </td>
+
+                                    <td>
+                                        ${row.accessibility_score}
+                                    </td>
+
+                                    <td>
+                                        ${row.best_practices_score}
+                                    </td>
+
+                                    <td>
+                                        ${row.seo_score}
+                                    </td>
+
+                                    <td>
+                                        ${
+                                            pageSpeedSeconds(
+                                                row.first_contentful_paint_ms
+                                            )
+                                        }
+                                    </td>
+
+                                    <td>
+                                        ${
+                                            pageSpeedSeconds(
+                                                row.largest_contentful_paint_ms
+                                            )
+                                        }
+                                    </td>
+
+                                    <td>
+                                        ${
+                                            pageSpeedSeconds(
+                                                row.speed_index_ms
+                                            )
+                                        }
+                                    </td>
+
+                                    <td>
+                                        ${
+                                            pageSpeedMilliseconds(
+                                                row.total_blocking_time_ms
+                                            )
+                                        }
+                                    </td>
+
+                                    <td>
+                                        ${
+                                            row.cumulative_layout_shift
+                                                .toFixed(3)
+                                        }
+                                    </td>
+
+                                    <td>
+                                        ${
+                                            pageSpeedMilliseconds(
+                                                row.server_response_time_ms
+                                            )
+                                        }
+                                    </td>
+
+                                    <td>
+                                        ${
+                                            badge(
+                                                pageSpeedLabel(
+                                                    health
+                                                ),
+                                                pageSpeedBadgeType(
+                                                    health
+                                                )
+                                            )
+                                        }
+                                    </td>
+
+                                    <td class="ps-opportunities">
+                                        ${
+                                            escapeHtml(
+                                                row.error ||
+                                                row.top_opportunities ||
+                                                "No major opportunity reported"
+                                            )
+                                        }
+                                    </td>
+                                </tr>
+                            `;
+                        }).join("")
+                    }
+                </tbody>
+            </table>
+        </div>
+    `;
+
+    setText(
+        "pagespeed-visible-count",
+        `${pagespeedRows.length} tests`
+    );
+}
+
+function averagePageSpeedScore(strategy) {
+    const values = pagespeedRows
+        .filter(
+            row =>
+                row.strategy === strategy &&
+                !row.error
+        )
+        .map(row => row.performance_score);
+
+    if (!values.length) {
+        return 0;
+    }
+
+    return Math.round(
+        values.reduce(
+            (sum, value) => sum + value,
+            0
+        ) / values.length
+    );
+}
+
+function pageSpeedHealth(row) {
+    if (row.error) {
+        return "failed";
+    }
+
+    if (
+        row.performance_score < 50 ||
+        row.largest_contentful_paint_ms > 4000 ||
+        row.total_blocking_time_ms > 600 ||
+        row.cumulative_layout_shift > 0.25
+    ) {
+        return "critical";
+    }
+
+    if (
+        row.performance_score < 75 ||
+        row.largest_contentful_paint_ms > 2500 ||
+        row.total_blocking_time_ms > 300 ||
+        row.cumulative_layout_shift > 0.10
+    ) {
+        return "high";
+    }
+
+    if (row.performance_score < 90) {
+        return "medium";
+    }
+
+    return "good";
+}
+
+function pageSpeedLabel(health) {
+    return {
+        good: "Good",
+        medium: "Needs review",
+        high: "High",
+        critical: "Critical",
+        failed: "Failed"
+    }[health] || "Unknown";
+}
+
+function pageSpeedBadgeType(health) {
+    return {
+        good: "ok",
+        medium: "medium",
+        high: "high",
+        critical: "critical",
+        failed: "critical"
+    }[health] || "neutral";
+}
+
+function pageSpeedSeconds(value) {
+    return `${(
+        numberValue(value) / 1000
+    ).toFixed(2)} s`;
+}
+
+function pageSpeedMilliseconds(value) {
+    return `${Math.round(
+        numberValue(value)
+    )} ms`;
+}
+
 function renderChanges() {
     const container = document.getElementById(
         "changelog-container"
@@ -3823,6 +4402,17 @@ function renderDates() {
             `Updated: ${
                 formatDate(
                     inspectionSummary.generated_at
+                )
+            }`
+        );
+    }
+
+    if (pagespeedSummary.generated_at) {
+        setText(
+            "last-updated-pagespeed",
+            `Updated: ${
+                formatDate(
+                    pagespeedSummary.generated_at
                 )
             }`
         );
@@ -4094,6 +4684,83 @@ function filterInspection() {
     setText(
         "inspection-visible-count",
         `${visible} URLs`
+    );
+}
+
+
+function filterPageSpeed() {
+    const table = document.getElementById(
+        "pagespeed-table"
+    );
+
+    if (!table) {
+        return;
+    }
+
+    const search =
+        inputValue(
+            "pagespeed-search"
+        ).toLowerCase();
+
+    const device =
+        inputValue(
+            "pagespeed-device"
+        );
+
+    const scoreFilter =
+        inputValue(
+            "pagespeed-score"
+        );
+
+    let visible = 0;
+
+    table
+        .querySelectorAll("tbody tr")
+        .forEach(row => {
+            const health =
+                row.dataset.health;
+
+            const scoreMatches =
+                !scoreFilter ||
+                (
+                    scoreFilter === "good" &&
+                    health === "good"
+                ) ||
+                (
+                    scoreFilter === "medium" &&
+                    [
+                        "medium",
+                        "high",
+                        "critical"
+                    ].includes(health)
+                ) ||
+                (
+                    scoreFilter === "failed" &&
+                    health === "failed"
+                );
+
+            const show =
+                (
+                    !search ||
+                    row.dataset.search
+                        .includes(search)
+                ) &&
+                (
+                    !device ||
+                    row.dataset.device === device
+                ) &&
+                scoreMatches;
+
+            row.hidden = !show;
+
+            if (show) {
+                visible += 1;
+            }
+        });
+
+    setText(
+        "pagespeed-visible-count",
+        `${visible} tests`
     );
 }
 
