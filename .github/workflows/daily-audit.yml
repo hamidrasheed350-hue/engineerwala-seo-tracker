@@ -1,0 +1,66 @@
+name: Daily EngineerWala SEO Audit
+
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: "17 3 * * *"
+
+permissions:
+  contents: write
+
+concurrency:
+  group: engineerwala-daily-seo-audit
+  cancel-in-progress: false
+
+jobs:
+  seo-audit:
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+
+    steps:
+      - name: Download repository
+        uses: actions/checkout@v6
+
+      - name: Set up Python
+        uses: actions/setup-python@v6
+        with:
+          python-version: "3.13"
+          cache: "pip"
+
+      - name: Install required packages
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
+
+      - name: Crawl EngineerWala website
+        run: python crawler/main.py
+
+      - name: Generate SEO audit reports
+        run: python crawler/run_seo_audit.py
+
+      - name: Compare current and previous crawl
+        run: python crawler/change_tracker.py
+
+      - name: Verify required reports
+        run: |
+          test -s data/urls.csv
+          test -s data/basic_crawl.csv
+          test -s data/latest_audit.csv
+          test -s data/latest_audit.json
+          test -s data/issues.csv
+          test -s data/change_log.csv
+
+      - name: Commit updated reports
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+
+          git add data/*.csv data/*.json
+
+          if git diff --cached --quiet; then
+            echo "No report changes to commit."
+          else
+            git commit -m "Update daily SEO audit reports"
+            git pull --rebase origin main
+            git push origin main
+          fi
