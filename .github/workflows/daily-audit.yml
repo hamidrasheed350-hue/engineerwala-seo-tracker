@@ -47,6 +47,13 @@ jobs:
           GSC_SITE_URL: https://engineerwala.com/
         run: python crawler/search_console.py
 
+      - name: Inspect selected URLs in Google
+        env:
+          GSC_SERVICE_ACCOUNT_JSON: ${{ secrets.GSC_SERVICE_ACCOUNT_JSON }}
+          GSC_SITE_URL: https://engineerwala.com/
+          URL_INSPECTION_LIMIT: "20"
+        run: python crawler/url_inspection.py
+
       - name: Verify required reports
         run: |
           test -s data/urls.csv
@@ -57,6 +64,8 @@ jobs:
           test -s data/change_log.csv
           test -s data/search_console_pages.csv
           test -s data/search_console_summary.json
+          test -s data/url_inspection.csv
+          test -s data/url_inspection_summary.json
 
       - name: Commit updated reports
         run: |
