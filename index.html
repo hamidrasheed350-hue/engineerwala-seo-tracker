@@ -220,7 +220,12 @@
                 let pages = [];
                 try {
                     const resp = await fetch('data/latest_audit.json');
-                    if (resp.ok) pages = await resp.json();
+                    if (resp.ok) {
+    const auditData = await resp.json();
+    pages = Array.isArray(auditData)
+        ? auditData
+        : (auditData.pages || []);
+}
                 } catch(e) { console.log('JSON load failed, trying CSV'); }
 
                 if (pages.length === 0) {
