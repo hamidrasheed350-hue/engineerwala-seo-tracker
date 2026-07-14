@@ -16,7 +16,6 @@
             --muted: #6b7280;
             --border: #e5e7eb;
             --accent: #2563eb;
-            --accent-soft: #eff6ff;
             --success: #15803d;
             --success-soft: #f0fdf4;
             --warning: #a16207;
@@ -25,6 +24,8 @@
             --danger-soft: #fef2f2;
             --high: #c2410c;
             --high-soft: #fff7ed;
+            --info: #0369a1;
+            --info-soft: #f0f9ff;
             --radius: 10px;
             --shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
         }
@@ -33,10 +34,6 @@
             box-sizing: border-box;
             margin: 0;
             padding: 0;
-        }
-
-        html {
-            scroll-behavior: smooth;
         }
 
         body {
@@ -106,7 +103,6 @@
             border: 0;
             border-radius: 8px;
             text-align: left;
-            transition: background 0.15s ease, color 0.15s ease;
         }
 
         .nav-button:hover {
@@ -222,26 +218,24 @@
             border-radius: 999px;
         }
 
-        .card.critical .card-line,
-        .card.errors .card-line,
-        .card.noindex .card-line {
-            background: var(--danger);
+        .card.success .card-line {
+            background: var(--success);
         }
 
-        .card.high .card-line,
-        .card.missing-h1 .card-line {
-            background: var(--high);
-        }
-
-        .card.medium .card-line,
-        .card.missing-meta .card-line,
-        .card.missing-alt .card-line {
+        .card.warning .card-line {
             background: var(--warning);
         }
 
-        .card.score .card-line,
-        .card.ok .card-line {
-            background: var(--success);
+        .card.danger .card-line {
+            background: var(--danger);
+        }
+
+        .card.high .card-line {
+            background: var(--high);
+        }
+
+        .card.info .card-line {
+            background: var(--info);
         }
 
         .panel {
@@ -283,13 +277,24 @@
 
         .filters {
             display: grid;
-            grid-template-columns: minmax(240px, 1.5fr) repeat(4, minmax(135px, 0.7fr));
+            grid-template-columns:
+                minmax(240px, 1.5fr)
+                repeat(4, minmax(135px, 0.7fr));
             gap: 10px;
             margin-bottom: 16px;
         }
 
-        .issue-filters {
-            grid-template-columns: minmax(260px, 1.5fr) minmax(150px, 0.7fr) minmax(220px, 1fr);
+        .filters.two {
+            grid-template-columns:
+                minmax(260px, 1fr)
+                minmax(190px, 0.4fr);
+        }
+
+        .filters.three {
+            grid-template-columns:
+                minmax(260px, 1.5fr)
+                minmax(150px, 0.7fr)
+                minmax(220px, 1fr);
         }
 
         .filters input,
@@ -325,12 +330,16 @@
             font-size: 13px;
         }
 
-        .issues-table {
+        table.compact {
             min-width: 1050px;
         }
 
-        .changes-table {
+        table.changes {
             min-width: 1000px;
+        }
+
+        table.performance {
+            min-width: 1250px;
         }
 
         th,
@@ -411,27 +420,19 @@
             background: var(--danger-soft);
         }
 
-        .score-text {
-            font-weight: 700;
-        }
-
         .score-good {
             color: var(--success);
+            font-weight: 700;
         }
 
         .score-average {
             color: var(--warning);
+            font-weight: 700;
         }
 
         .score-bad {
             color: var(--danger);
-        }
-
-        .badges {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 5px;
-            min-width: 230px;
+            font-weight: 700;
         }
 
         .badge {
@@ -467,22 +468,21 @@
         }
 
         .badge-low {
-            color: #0369a1;
-            background: #f0f9ff;
+            color: var(--info);
+            background: var(--info-soft);
             border-color: #bae6fd;
-        }
-
-        .badge-none,
-        .badge-neutral {
-            color: var(--muted);
-            background: #f9fafb;
-            border-color: var(--border);
         }
 
         .badge-ok {
             color: var(--success);
             background: var(--success-soft);
             border-color: #bbf7d0;
+        }
+
+        .badge-neutral {
+            color: var(--muted);
+            background: #f9fafb;
+            border-color: var(--border);
         }
 
         .action-cell {
@@ -501,31 +501,6 @@
 
         .view-button:hover {
             background: #f3f4f6;
-        }
-
-        .loading,
-        .empty,
-        .error {
-            padding: 34px 20px;
-            text-align: center;
-            border-radius: 8px;
-        }
-
-        .loading {
-            color: var(--muted);
-            background: #fafafa;
-        }
-
-        .empty {
-            color: var(--muted);
-            background: #fafafa;
-            border: 1px dashed var(--border);
-        }
-
-        .error {
-            color: var(--danger);
-            background: var(--danger-soft);
-            border: 1px solid #fecaca;
         }
 
         .summary-list {
@@ -578,6 +553,46 @@
             margin-top: 5px;
             color: var(--muted);
             font-size: 12px;
+        }
+
+        .loading,
+        .empty,
+        .error {
+            padding: 34px 20px;
+            text-align: center;
+            border-radius: 8px;
+        }
+
+        .loading {
+            color: var(--muted);
+            background: #fafafa;
+        }
+
+        .empty {
+            color: var(--muted);
+            background: #fafafa;
+            border: 1px dashed var(--border);
+        }
+
+        .error {
+            color: var(--danger);
+            background: var(--danger-soft);
+            border: 1px solid #fecaca;
+        }
+
+        .positive {
+            color: var(--success);
+            font-weight: 700;
+        }
+
+        .negative {
+            color: var(--danger);
+            font-weight: 700;
+        }
+
+        .neutral {
+            color: var(--muted);
+            font-weight: 700;
         }
 
         .drawer-backdrop {
@@ -749,7 +764,8 @@
             }
 
             .filters,
-            .issue-filters,
+            .filters.two,
+            .filters.three,
             .priority-list {
                 grid-template-columns: 1fr;
             }
@@ -772,15 +788,59 @@
         <aside class="sidebar">
             <div class="brand">
                 <div class="brand-title">EngineerWala SEO</div>
-                <div class="brand-subtitle">Automated website monitoring</div>
+                <div class="brand-subtitle">
+                    Automated website monitoring
+                </div>
             </div>
 
             <nav class="nav" aria-label="Dashboard navigation">
-                <button class="nav-button active" type="button" data-page="overview">Overview</button>
-                <button class="nav-button" type="button" data-page="pages">All Pages</button>
-                <button class="nav-button" type="button" data-page="issues">SEO Issues</button>
-                <button class="nav-button" type="button" data-page="changes">Change Log</button>
-                <button class="nav-button" type="button" data-page="system">System Info</button>
+                <button
+                    class="nav-button active"
+                    type="button"
+                    data-page="overview"
+                >
+                    Overview
+                </button>
+
+                <button
+                    class="nav-button"
+                    type="button"
+                    data-page="pages"
+                >
+                    All Pages
+                </button>
+
+                <button
+                    class="nav-button"
+                    type="button"
+                    data-page="issues"
+                >
+                    SEO Issues
+                </button>
+
+                <button
+                    class="nav-button"
+                    type="button"
+                    data-page="performance"
+                >
+                    Search Performance
+                </button>
+
+                <button
+                    class="nav-button"
+                    type="button"
+                    data-page="changes"
+                >
+                    Change Log
+                </button>
+
+                <button
+                    class="nav-button"
+                    type="button"
+                    data-page="system"
+                >
+                    System Info
+                </button>
             </nav>
 
             <div class="sidebar-footer">
@@ -794,86 +854,161 @@
                 <div class="page-header">
                     <div>
                         <h1 class="page-title">Overview</h1>
-                        <p class="page-description">Detailed summary of the latest EngineerWala SEO crawl.</p>
+                        <p class="page-description">
+                            Detailed summary of the latest EngineerWala SEO crawl.
+                        </p>
                     </div>
-                    <div class="last-updated" id="last-updated-overview">Last updated: —</div>
+
+                    <div
+                        class="last-updated"
+                        id="last-updated-overview"
+                    >
+                        Last updated: —
+                    </div>
                 </div>
 
                 <div class="cards">
-                    <article class="card score">
-                        <div class="card-label">Website Health Score</div>
+                    <article class="card success">
+                        <div class="card-label">
+                            Website Health Score
+                        </div>
                         <div class="card-value" id="health-score">—</div>
                         <div class="card-line"></div>
-                        <div class="card-note">Average page SEO score</div>
+                        <div class="card-note">
+                            Average page SEO score
+                        </div>
                     </article>
 
-                    <article class="card">
+                    <article class="card info">
                         <div class="card-label">Total Pages</div>
                         <div class="card-value" id="total-pages">—</div>
                         <div class="card-line"></div>
-                        <div class="card-note">Pages included in latest crawl</div>
+                        <div class="card-note">
+                            Pages included in latest crawl
+                        </div>
                     </article>
 
-                    <article class="card ok">
-                        <div class="card-label">Successful 200 Pages</div>
-                        <div class="card-value" id="status-200-count">—</div>
+                    <article class="card success">
+                        <div class="card-label">
+                            Successful 200 Pages
+                        </div>
+                        <div
+                            class="card-value"
+                            id="status-200-count"
+                        >
+                            —
+                        </div>
                         <div class="card-line"></div>
-                        <div class="card-note">Pages returning HTTP 200</div>
+                        <div class="card-note">
+                            Pages returning HTTP 200
+                        </div>
                     </article>
 
-                    <article class="card errors">
-                        <div class="card-label">HTTP and Crawl Errors</div>
-                        <div class="card-value" id="error-pages-count">—</div>
+                    <article class="card danger">
+                        <div class="card-label">
+                            HTTP and Crawl Errors
+                        </div>
+                        <div
+                            class="card-value"
+                            id="error-pages-count"
+                        >
+                            —
+                        </div>
                         <div class="card-line"></div>
-                        <div class="card-note">4xx, 5xx or request errors</div>
+                        <div class="card-note">
+                            4xx, 5xx or request errors
+                        </div>
                     </article>
 
-                    <article class="card missing-h1">
-                        <div class="card-label">Pages Missing H1</div>
-                        <div class="card-value" id="missing-h1-count">—</div>
+                    <article class="card high">
+                        <div class="card-label">
+                            Pages Missing H1
+                        </div>
+                        <div
+                            class="card-value"
+                            id="missing-h1-count"
+                        >
+                            —
+                        </div>
                         <div class="card-line"></div>
-                        <div class="card-note">Pages where H1 count is zero</div>
+                        <div class="card-note">
+                            Pages where H1 count is zero
+                        </div>
                     </article>
 
-                    <article class="card missing-meta">
-                        <div class="card-label">Missing Meta Description</div>
-                        <div class="card-value" id="missing-meta-count">—</div>
+                    <article class="card warning">
+                        <div class="card-label">
+                            Missing Meta Description
+                        </div>
+                        <div
+                            class="card-value"
+                            id="missing-meta-count"
+                        >
+                            —
+                        </div>
                         <div class="card-line"></div>
-                        <div class="card-note">Pages without a meta description</div>
+                        <div class="card-note">
+                            Pages without a meta description
+                        </div>
                     </article>
 
-                    <article class="card missing-alt">
-                        <div class="card-label">Pages with Missing Alt</div>
-                        <div class="card-value" id="missing-alt-pages-count">—</div>
+                    <article class="card warning">
+                        <div class="card-label">
+                            Pages with Missing Alt
+                        </div>
+                        <div
+                            class="card-value"
+                            id="missing-alt-pages-count"
+                        >
+                            —
+                        </div>
                         <div class="card-line"></div>
-                        <div class="card-note">Pages containing images without alt text</div>
+                        <div class="card-note">
+                            Pages containing images without alt text
+                        </div>
                     </article>
 
-                    <article class="card noindex">
-                        <div class="card-label">Noindex Pages</div>
-                        <div class="card-value" id="noindex-pages-count">—</div>
+                    <article class="card danger">
+                        <div class="card-label">
+                            Noindex Pages
+                        </div>
+                        <div
+                            class="card-value"
+                            id="noindex-pages-count"
+                        >
+                            —
+                        </div>
                         <div class="card-line"></div>
-                        <div class="card-note">Pages blocked from indexing</div>
+                        <div class="card-note">
+                            Pages blocked from indexing
+                        </div>
                     </article>
                 </div>
 
                 <div class="panel">
                     <div class="panel-header">
                         <div>
-                            <div class="panel-title">Issue Summary</div>
-                            <div class="panel-note">Current issue totals by severity.</div>
+                            <div class="panel-title">
+                                Issue Summary
+                            </div>
+                            <div class="panel-note">
+                                Current issue totals by severity.
+                            </div>
                         </div>
                     </div>
+
                     <div class="panel-body">
                         <div class="priority-list">
                             <div class="priority-box">
                                 <strong id="critical-count">—</strong>
                                 <span>Critical issues</span>
                             </div>
+
                             <div class="priority-box">
                                 <strong id="high-count">—</strong>
                                 <span>High issues</span>
                             </div>
+
                             <div class="priority-box">
                                 <strong id="medium-count">—</strong>
                                 <span>Medium issues</span>
@@ -885,35 +1020,75 @@
                 <div class="panel">
                     <div class="panel-header">
                         <div>
-                            <div class="panel-title">Latest Crawl Summary</div>
-                            <div class="panel-note">Detailed report status and page totals.</div>
+                            <div class="panel-title">
+                                Latest Crawl Summary
+                            </div>
+                            <div class="panel-note">
+                                Detailed report status and page totals.
+                            </div>
                         </div>
                     </div>
+
                     <div class="panel-body">
                         <div class="summary-list">
                             <div class="summary-row">
-                                <span class="summary-label">Total reported issues</span>
-                                <span class="summary-value" id="summary-issues">—</span>
+                                <span class="summary-label">
+                                    Total reported issues
+                                </span>
+                                <span
+                                    class="summary-value"
+                                    id="summary-issues"
+                                >
+                                    —
+                                </span>
                             </div>
+
                             <div class="summary-row">
-                                <span class="summary-label">High-priority pages</span>
-                                <span class="summary-value" id="summary-high-priority-pages">—</span>
+                                <span class="summary-label">
+                                    High-priority pages
+                                </span>
+                                <span
+                                    class="summary-value"
+                                    id="summary-high-priority-pages"
+                                >
+                                    —
+                                </span>
                             </div>
+
                             <div class="summary-row">
-                                <span class="summary-label">Canonical problems</span>
-                                <span class="summary-value" id="summary-canonical-problems">—</span>
+                                <span class="summary-label">
+                                    Canonical problems
+                                </span>
+                                <span
+                                    class="summary-value"
+                                    id="summary-canonical-problems"
+                                >
+                                    —
+                                </span>
                             </div>
+
                             <div class="summary-row">
-                                <span class="summary-label">Pages scoring 80 or higher</span>
-                                <span class="summary-value" id="summary-good-pages">—</span>
+                                <span class="summary-label">
+                                    Pages scoring 80 or higher
+                                </span>
+                                <span
+                                    class="summary-value"
+                                    id="summary-good-pages"
+                                >
+                                    —
+                                </span>
                             </div>
+
                             <div class="summary-row">
-                                <span class="summary-label">Total missing alt attributes</span>
-                                <span class="summary-value" id="summary-missing-alt-total">—</span>
-                            </div>
-                            <div class="summary-row">
-                                <span class="summary-label">Crawl duration</span>
-                                <span class="summary-value" id="summary-crawl-duration">Not recorded</span>
+                                <span class="summary-label">
+                                    Total missing alt attributes
+                                </span>
+                                <span
+                                    class="summary-value"
+                                    id="summary-missing-alt-total"
+                                >
+                                    —
+                                </span>
                             </div>
                         </div>
                     </div>
@@ -924,57 +1099,117 @@
                 <div class="page-header">
                     <div>
                         <h1 class="page-title">All Pages</h1>
-                        <p class="page-description">Detailed technical and content data for every crawled page.</p>
+                        <p class="page-description">
+                            Detailed technical and content data for every crawled page.
+                        </p>
                     </div>
-                    <div class="last-updated" id="last-updated-pages">Last updated: —</div>
+
+                    <div
+                        class="last-updated"
+                        id="last-updated-pages"
+                    >
+                        Last updated: —
+                    </div>
                 </div>
 
                 <div class="panel">
                     <div class="panel-header">
                         <div>
-                            <div class="panel-title">Page Audit</div>
-                            <div class="panel-note">Use horizontal scrolling to view all technical columns.</div>
+                            <div class="panel-title">
+                                Page Audit
+                            </div>
+                            <div class="panel-note">
+                                Use horizontal scrolling to view all technical columns.
+                            </div>
                         </div>
-                        <div class="panel-count" id="visible-pages-count">0 pages</div>
+
+                        <div
+                            class="panel-count"
+                            id="visible-pages-count"
+                        >
+                            0 pages
+                        </div>
                     </div>
 
                     <div class="panel-body">
                         <div class="filters">
-                            <input type="search" id="search-url" placeholder="Search URL or title">
+                            <input
+                                type="search"
+                                id="search-url"
+                                placeholder="Search URL or title"
+                            >
 
-                            <select id="filter-status" aria-label="Filter by status">
-                                <option value="">All Status Codes</option>
-                                <option value="200">200 OK</option>
-                                <option value="3xx">3xx Redirect</option>
-                                <option value="4xx">4xx Client Error</option>
-                                <option value="5xx">5xx Server Error</option>
-                                <option value="error">Request Error</option>
+                            <select id="filter-status">
+                                <option value="">
+                                    All Status Codes
+                                </option>
+                                <option value="200">
+                                    200 OK
+                                </option>
+                                <option value="3xx">
+                                    3xx Redirect
+                                </option>
+                                <option value="4xx">
+                                    4xx Client Error
+                                </option>
+                                <option value="5xx">
+                                    5xx Server Error
+                                </option>
+                                <option value="error">
+                                    Request Error
+                                </option>
                             </select>
 
-                            <select id="filter-score" aria-label="Filter by score">
-                                <option value="">All SEO Scores</option>
-                                <option value="good">Good 80+</option>
-                                <option value="average">Average 50-79</option>
-                                <option value="bad">Poor below 50</option>
+                            <select id="filter-score">
+                                <option value="">
+                                    All SEO Scores
+                                </option>
+                                <option value="good">
+                                    Good 80+
+                                </option>
+                                <option value="average">
+                                    Average 50-79
+                                </option>
+                                <option value="bad">
+                                    Poor below 50
+                                </option>
                             </select>
 
-                            <select id="filter-priority" aria-label="Filter by priority">
-                                <option value="">All Priorities</option>
-                                <option value="critical">Critical</option>
-                                <option value="high">High</option>
-                                <option value="medium">Medium</option>
-                                <option value="low">Low</option>
+                            <select id="filter-priority">
+                                <option value="">
+                                    All Priorities
+                                </option>
+                                <option value="critical">
+                                    Critical
+                                </option>
+                                <option value="high">
+                                    High
+                                </option>
+                                <option value="medium">
+                                    Medium
+                                </option>
+                                <option value="low">
+                                    Low
+                                </option>
                             </select>
 
-                            <select id="filter-index" aria-label="Filter by index status">
-                                <option value="">All Index States</option>
-                                <option value="index">Indexable</option>
-                                <option value="noindex">Noindex</option>
+                            <select id="filter-index">
+                                <option value="">
+                                    All Index States
+                                </option>
+                                <option value="index">
+                                    Indexable
+                                </option>
+                                <option value="noindex">
+                                    Noindex
+                                </option>
                             </select>
                         </div>
 
                         <div id="pages-table-container">
-                            <div class="loading">Loading page audit data...</div>
+                            <div class="loading">
+                                Loading page audit data...
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -984,39 +1219,218 @@
                 <div class="page-header">
                     <div>
                         <h1 class="page-title">SEO Issues</h1>
-                        <p class="page-description">Search issues and review the exact recommended action.</p>
+                        <p class="page-description">
+                            Search issues and review the exact recommended action.
+                        </p>
                     </div>
-                    <div class="last-updated" id="last-updated-issues">Last updated: —</div>
+
+                    <div
+                        class="last-updated"
+                        id="last-updated-issues"
+                    >
+                        Last updated: —
+                    </div>
                 </div>
 
                 <div class="panel">
                     <div class="panel-header">
                         <div>
-                            <div class="panel-title">Issue Report</div>
-                            <div class="panel-note">Filter by URL, issue, severity or issue type.</div>
+                            <div class="panel-title">
+                                Issue Report
+                            </div>
+                            <div class="panel-note">
+                                Filter by URL, issue, severity or issue type.
+                            </div>
                         </div>
-                        <div class="panel-count" id="visible-issues-count">0 issues</div>
+
+                        <div
+                            class="panel-count"
+                            id="visible-issues-count"
+                        >
+                            0 issues
+                        </div>
                     </div>
 
                     <div class="panel-body">
-                        <div class="filters issue-filters">
-                            <input type="search" id="search-issues" placeholder="Search URL, issue or action">
+                        <div class="filters three">
+                            <input
+                                type="search"
+                                id="search-issues"
+                                placeholder="Search URL, issue or action"
+                            >
 
-                            <select id="filter-issue-severity" aria-label="Filter issues by severity">
-                                <option value="">All Severities</option>
-                                <option value="critical">Critical</option>
-                                <option value="high">High</option>
-                                <option value="medium">Medium</option>
-                                <option value="low">Low</option>
+                            <select id="filter-issue-severity">
+                                <option value="">
+                                    All Severities
+                                </option>
+                                <option value="critical">
+                                    Critical
+                                </option>
+                                <option value="high">
+                                    High
+                                </option>
+                                <option value="medium">
+                                    Medium
+                                </option>
+                                <option value="low">
+                                    Low
+                                </option>
                             </select>
 
-                            <select id="filter-issue-type" aria-label="Filter by issue type">
-                                <option value="">All Issue Types</option>
+                            <select id="filter-issue-type">
+                                <option value="">
+                                    All Issue Types
+                                </option>
                             </select>
                         </div>
 
                         <div id="issues-container">
-                            <div class="loading">Loading issue report...</div>
+                            <div class="loading">
+                                Loading issue report...
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <section class="page" id="page-performance">
+                <div class="page-header">
+                    <div>
+                        <h1 class="page-title">
+                            Search Performance
+                        </h1>
+                        <p class="page-description">
+                            Google Search Console clicks, impressions, CTR and average position.
+                        </p>
+                    </div>
+
+                    <div
+                        class="last-updated"
+                        id="last-updated-performance"
+                    >
+                        Last updated: —
+                    </div>
+                </div>
+
+                <div class="cards">
+                    <article class="card success">
+                        <div class="card-label">Clicks</div>
+                        <div class="card-value" id="gsc-clicks">—</div>
+                        <div class="card-line"></div>
+                        <div
+                            class="card-note"
+                            id="gsc-clicks-change"
+                        >
+                            Previous period: —
+                        </div>
+                    </article>
+
+                    <article class="card info">
+                        <div class="card-label">
+                            Impressions
+                        </div>
+                        <div
+                            class="card-value"
+                            id="gsc-impressions"
+                        >
+                            —
+                        </div>
+                        <div class="card-line"></div>
+                        <div
+                            class="card-note"
+                            id="gsc-impressions-change"
+                        >
+                            Previous period: —
+                        </div>
+                    </article>
+
+                    <article class="card warning">
+                        <div class="card-label">CTR</div>
+                        <div class="card-value" id="gsc-ctr">—</div>
+                        <div class="card-line"></div>
+                        <div
+                            class="card-note"
+                            id="gsc-ctr-change"
+                        >
+                            Previous period: —
+                        </div>
+                    </article>
+
+                    <article class="card success">
+                        <div class="card-label">
+                            Average Position
+                        </div>
+                        <div
+                            class="card-value"
+                            id="gsc-position"
+                        >
+                            —
+                        </div>
+                        <div class="card-line"></div>
+                        <div
+                            class="card-note"
+                            id="gsc-position-change"
+                        >
+                            Previous period: —
+                        </div>
+                    </article>
+                </div>
+
+                <div class="panel">
+                    <div class="panel-header">
+                        <div>
+                            <div class="panel-title">
+                                Page Performance
+                            </div>
+                            <div
+                                class="panel-note"
+                                id="gsc-period-label"
+                            >
+                                Current 7 days compared with previous 7 days.
+                            </div>
+                        </div>
+
+                        <div
+                            class="panel-count"
+                            id="gsc-page-count"
+                        >
+                            0 pages
+                        </div>
+                    </div>
+
+                    <div class="panel-body">
+                        <div class="filters two">
+                            <input
+                                type="search"
+                                id="search-performance"
+                                placeholder="Search page URL"
+                            >
+
+                            <select
+                                id="filter-performance-opportunity"
+                            >
+                                <option value="">
+                                    All Pages
+                                </option>
+                                <option value="top">
+                                    Top Impressions
+                                </option>
+                                <option value="position">
+                                    Position 8-20
+                                </option>
+                                <option value="drop">
+                                    Impressions Dropped
+                                </option>
+                                <option value="zero-clicks">
+                                    Impressions but Zero Clicks
+                                </option>
+                            </select>
+                        </div>
+
+                        <div id="performance-table-container">
+                            <div class="loading">
+                                Loading Search Console data...
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -1025,23 +1439,48 @@
             <section class="page" id="page-changes">
                 <div class="page-header">
                     <div>
-                        <h1 class="page-title">Change Log</h1>
-                        <p class="page-description">Changes detected between the current and previous crawl.</p>
+                        <h1 class="page-title">
+                            Change Log
+                        </h1>
+                        <p class="page-description">
+                            Changes detected between the current and previous crawl.
+                        </p>
                     </div>
-                    <div class="last-updated" id="last-updated-changes">Last updated: —</div>
+
+                    <div
+                        class="last-updated"
+                        id="last-updated-changes"
+                    >
+                        Last updated: —
+                    </div>
                 </div>
 
                 <div class="panel">
                     <div class="panel-header">
                         <div>
-                            <div class="panel-title">Detected Changes</div>
-                            <div class="panel-note">Date, URL, changed field, previous value and new value.</div>
+                            <div class="panel-title">
+                                Detected Changes
+                            </div>
+                            <div class="panel-note">
+                                Date, URL, changed field, previous value and new value.
+                            </div>
                         </div>
-                        <div class="panel-count" id="changes-count">0 changes</div>
+
+                        <div
+                            class="panel-count"
+                            id="changes-count"
+                        >
+                            0 changes
+                        </div>
                     </div>
 
-                    <div class="panel-body" id="changelog-container">
-                        <div class="loading">Loading change log...</div>
+                    <div
+                        class="panel-body"
+                        id="changelog-container"
+                    >
+                        <div class="loading">
+                            Loading change log...
+                        </div>
                     </div>
                 </div>
             </section>
@@ -1049,57 +1488,157 @@
             <section class="page" id="page-system">
                 <div class="page-header">
                     <div>
-                        <h1 class="page-title">System Info</h1>
-                        <p class="page-description">Current dashboard, crawl and automation information.</p>
+                        <h1 class="page-title">
+                            System Info
+                        </h1>
+                        <p class="page-description">
+                            Current dashboard, crawl, Search Console and automation information.
+                        </p>
                     </div>
-                    <div class="last-updated" id="last-updated-system">Last updated: —</div>
+
+                    <div
+                        class="last-updated"
+                        id="last-updated-system"
+                    >
+                        Last updated: —
+                    </div>
                 </div>
 
                 <div class="panel">
                     <div class="panel-header">
                         <div>
-                            <div class="panel-title">Current Status</div>
-                            <div class="panel-note">Known information from the latest generated reports.</div>
+                            <div class="panel-title">
+                                Current Status
+                            </div>
+                            <div class="panel-note">
+                                Known information from the latest generated reports.
+                            </div>
                         </div>
                     </div>
 
                     <div class="panel-body">
                         <div class="summary-list">
                             <div class="summary-row">
-                                <span class="summary-label">Last successful crawl</span>
-                                <span class="summary-value" id="system-last-crawl">—</span>
+                                <span class="summary-label">
+                                    Last successful crawl
+                                </span>
+                                <span
+                                    class="summary-value"
+                                    id="system-last-crawl"
+                                >
+                                    —
+                                </span>
                             </div>
+
                             <div class="summary-row">
-                                <span class="summary-label">Total URLs crawled</span>
-                                <span class="summary-value" id="system-total-pages">—</span>
+                                <span class="summary-label">
+                                    Total URLs crawled
+                                </span>
+                                <span
+                                    class="summary-value"
+                                    id="system-total-pages"
+                                >
+                                    —
+                                </span>
                             </div>
+
                             <div class="summary-row">
-                                <span class="summary-label">Crawl errors</span>
-                                <span class="summary-value" id="system-crawl-errors">—</span>
+                                <span class="summary-label">
+                                    Crawl errors
+                                </span>
+                                <span
+                                    class="summary-value"
+                                    id="system-crawl-errors"
+                                >
+                                    —
+                                </span>
                             </div>
+
                             <div class="summary-row">
-                                <span class="summary-label">GitHub Actions status</span>
-                                <span class="summary-value">Not verified yet</span>
+                                <span class="summary-label">
+                                    Search Console property
+                                </span>
+                                <span
+                                    class="summary-value"
+                                    id="system-gsc-property"
+                                >
+                                    —
+                                </span>
                             </div>
+
                             <div class="summary-row">
-                                <span class="summary-label">Dashboard mode</span>
-                                <span class="summary-value">Read only</span>
+                                <span class="summary-label">
+                                    Search Console page rows
+                                </span>
+                                <span
+                                    class="summary-value"
+                                    id="system-gsc-pages"
+                                >
+                                    —
+                                </span>
                             </div>
+
                             <div class="summary-row">
-                                <span class="summary-label">Audit JSON</span>
-                                <span class="summary-value">data/latest_audit.json</span>
+                                <span class="summary-label">
+                                    GitHub Actions status
+                                </span>
+                                <span class="summary-value">
+                                    Working
+                                </span>
                             </div>
+
                             <div class="summary-row">
-                                <span class="summary-label">Audit CSV fallback</span>
-                                <span class="summary-value">data/latest_audit.csv</span>
+                                <span class="summary-label">
+                                    Dashboard mode
+                                </span>
+                                <span class="summary-value">
+                                    Read only
+                                </span>
                             </div>
+
                             <div class="summary-row">
-                                <span class="summary-label">Issues report</span>
-                                <span class="summary-value">data/issues.csv</span>
+                                <span class="summary-label">
+                                    Audit JSON
+                                </span>
+                                <span class="summary-value">
+                                    data/latest_audit.json
+                                </span>
                             </div>
+
                             <div class="summary-row">
-                                <span class="summary-label">Change log</span>
-                                <span class="summary-value">data/change_log.csv</span>
+                                <span class="summary-label">
+                                    Issues report
+                                </span>
+                                <span class="summary-value">
+                                    data/issues.csv
+                                </span>
+                            </div>
+
+                            <div class="summary-row">
+                                <span class="summary-label">
+                                    Search Console summary
+                                </span>
+                                <span class="summary-value">
+                                    data/search_console_summary.json
+                                </span>
+                            </div>
+
+                            <div class="summary-row">
+                                <span class="summary-label">
+                                    Search Console pages
+                                </span>
+                                <span class="summary-value">
+                                    data/search_console_pages.csv
+                                </span>
+                            </div>
+
+                            <div class="summary-row">
+                                <span class="summary-label">
+                                    Change log
+                                </span>
+                                <span class="summary-value">
+                                    data/change_log.csv
+                                </span>
                             </div>
                         </div>
                     </div>
@@ -1108,225 +1647,387 @@
         </main>
     </div>
 
-    <div class="drawer-backdrop" id="page-details-backdrop" aria-hidden="true">
-        <aside class="drawer" role="dialog" aria-modal="true" aria-labelledby="drawer-title">
+    <div
+        class="drawer-backdrop"
+        id="page-details-backdrop"
+        aria-hidden="true"
+    >
+        <aside
+            class="drawer"
+            role="dialog"
+            aria-modal="true"
+            aria-labelledby="drawer-title"
+        >
             <div class="drawer-header">
                 <div>
-                    <div class="drawer-title" id="drawer-title">Page Details</div>
-                    <div class="drawer-url" id="drawer-url"></div>
+                    <div
+                        class="drawer-title"
+                        id="drawer-title"
+                    >
+                        Page Details
+                    </div>
+                    <div
+                        class="drawer-url"
+                        id="drawer-url"
+                    ></div>
                 </div>
-                <button class="drawer-close" id="drawer-close" type="button" aria-label="Close">×</button>
+
+                <button
+                    class="drawer-close"
+                    id="drawer-close"
+                    type="button"
+                    aria-label="Close"
+                >
+                    ×
+                </button>
             </div>
-            <div class="drawer-body" id="drawer-body"></div>
+
+            <div
+                class="drawer-body"
+                id="drawer-body"
+            ></div>
         </aside>
     </div>
 
     <script>
         "use strict";
 
-        const DATA_PATHS = {
+        const PATHS = {
             auditJson: "data/latest_audit.json",
             auditCsv: "data/latest_audit.csv",
             issuesCsv: "data/issues.csv",
-            changeLogCsv: "data/change_log.csv"
+            changesCsv: "data/change_log.csv",
+            gscSummary: "data/search_console_summary.json",
+            gscPages: "data/search_console_pages.csv"
         };
 
-        let pagesData = [];
-        let issuesData = [];
-        let changesData = [];
-        let auditMetadata = {};
+        let pages = [];
+        let issues = [];
+        let changes = [];
+        let auditMeta = {};
+        let gscSummary = {};
+        let gscRows = [];
 
-        document.addEventListener("DOMContentLoaded", () => {
-            setupNavigation();
-            setupPageFilters();
-            setupIssueFilters();
-            setupDrawer();
-            loadDashboard();
-        });
+        document.addEventListener(
+            "DOMContentLoaded",
+            async () => {
+                setupNavigation();
+                setupFilters();
+                setupDrawer();
+
+                try {
+                    const [
+                        auditResult,
+                        issuesResult,
+                        changesResult,
+                        summaryResult,
+                        gscPagesResult
+                    ] = await Promise.all([
+                        loadAudit(),
+                        loadCsv(PATHS.issuesCsv),
+                        loadCsv(PATHS.changesCsv),
+                        loadJson(PATHS.gscSummary),
+                        loadCsv(PATHS.gscPages)
+                    ]);
+
+                    pages = auditResult.pages;
+                    auditMeta = auditResult.meta;
+                    issues = normalizeIssues(issuesResult);
+                    changes = normalizeChanges(changesResult);
+                    gscSummary = summaryResult || {};
+                    gscRows = gscPagesResult.map(
+                        normalizeGscRow
+                    );
+
+                    renderOverview();
+                    renderPages();
+                    renderIssues();
+                    renderPerformance();
+                    renderChanges();
+                    renderSystem();
+                    renderDates();
+
+                } catch (error) {
+                    console.error(error);
+                    showFatalError(error);
+                }
+            }
+        );
 
         function setupNavigation() {
-            const buttons = document.querySelectorAll(".nav-button");
-            const pages = document.querySelectorAll(".page");
+            document
+                .querySelectorAll(".nav-button")
+                .forEach(button => {
+                    button.addEventListener(
+                        "click",
+                        () => {
+                            document
+                                .querySelectorAll(".nav-button")
+                                .forEach(item => {
+                                    item.classList.remove("active");
+                                });
 
-            buttons.forEach(button => {
-                button.addEventListener("click", () => {
-                    const target = button.dataset.page;
+                            document
+                                .querySelectorAll(".page")
+                                .forEach(page => {
+                                    page.classList.remove("active");
+                                });
 
-                    buttons.forEach(item => item.classList.remove("active"));
-                    pages.forEach(page => page.classList.remove("active"));
+                            button.classList.add("active");
 
-                    button.classList.add("active");
-                    document.getElementById(`page-${target}`).classList.add("active");
+                            document
+                                .getElementById(
+                                    `page-${button.dataset.page}`
+                                )
+                                .classList.add("active");
+                        }
+                    );
                 });
-            });
         }
 
-        function setupPageFilters() {
-            document.getElementById("search-url").addEventListener("input", applyPageFilters);
-            document.getElementById("filter-status").addEventListener("change", applyPageFilters);
-            document.getElementById("filter-score").addEventListener("change", applyPageFilters);
-            document.getElementById("filter-priority").addEventListener("change", applyPageFilters);
-            document.getElementById("filter-index").addEventListener("change", applyPageFilters);
-        }
+        function setupFilters() {
+            const filters = [
+                ["search-url", "input", filterPages],
+                ["filter-status", "change", filterPages],
+                ["filter-score", "change", filterPages],
+                ["filter-priority", "change", filterPages],
+                ["filter-index", "change", filterPages],
+                ["search-issues", "input", filterIssues],
+                [
+                    "filter-issue-severity",
+                    "change",
+                    filterIssues
+                ],
+                [
+                    "filter-issue-type",
+                    "change",
+                    filterIssues
+                ],
+                [
+                    "search-performance",
+                    "input",
+                    filterPerformance
+                ],
+                [
+                    "filter-performance-opportunity",
+                    "change",
+                    filterPerformance
+                ]
+            ];
 
-        function setupIssueFilters() {
-            document.getElementById("search-issues").addEventListener("input", applyIssueFilters);
-            document.getElementById("filter-issue-severity").addEventListener("change", applyIssueFilters);
-            document.getElementById("filter-issue-type").addEventListener("change", applyIssueFilters);
+            filters.forEach(
+                ([id, eventName, handler]) => {
+                    document
+                        .getElementById(id)
+                        .addEventListener(
+                            eventName,
+                            handler
+                        );
+                }
+            );
         }
 
         function setupDrawer() {
-            const backdrop = document.getElementById("page-details-backdrop");
-            const closeButton = document.getElementById("drawer-close");
+            const backdrop = document.getElementById(
+                "page-details-backdrop"
+            );
 
-            closeButton.addEventListener("click", closePageDetails);
+            document
+                .getElementById("drawer-close")
+                .addEventListener(
+                    "click",
+                    closeDrawer
+                );
 
-            backdrop.addEventListener("click", event => {
-                if (event.target === backdrop) {
-                    closePageDetails();
-                }
-            });
-
-            document.addEventListener("keydown", event => {
-                if (event.key === "Escape") {
-                    closePageDetails();
-                }
-            });
-        }
-
-        async function loadDashboard() {
-            try {
-                const auditResult = await loadAuditData();
-
-                pagesData = auditResult.pages;
-                auditMetadata = auditResult.metadata;
-                issuesData = normalizeIssues(await loadCsvFile(DATA_PATHS.issuesCsv));
-                changesData = normalizeChanges(await loadCsvFile(DATA_PATHS.changeLogCsv));
-
-                renderOverview();
-                renderPagesTable(pagesData);
-                populateIssueTypeFilter();
-                renderIssues(issuesData);
-                renderChangeLog();
-                renderSystemInfo();
-                renderLastUpdated();
-            } catch (error) {
-                console.error("Dashboard failed to load:", error);
-                showFatalError(error);
-            }
-        }
-
-        async function loadAuditData() {
-            let metadata = {};
-            let pages = [];
-
-            try {
-                const response = await fetchWithCacheBuster(DATA_PATHS.auditJson);
-
-                if (response.ok) {
-                    const raw = await response.json();
-
-                    if (Array.isArray(raw)) {
-                        pages = raw;
-                    } else if (raw && typeof raw === "object") {
-                        metadata = raw;
-                        pages = firstArray(raw.pages, raw.results, raw.data, raw.urls);
+            backdrop.addEventListener(
+                "click",
+                event => {
+                    if (event.target === backdrop) {
+                        closeDrawer();
                     }
                 }
+            );
+
+            document.addEventListener(
+                "keydown",
+                event => {
+                    if (event.key === "Escape") {
+                        closeDrawer();
+                    }
+                }
+            );
+        }
+
+        async function loadAudit() {
+            let meta = {};
+            let result = [];
+
+            try {
+                const raw = await loadJson(
+                    PATHS.auditJson
+                );
+
+                if (Array.isArray(raw)) {
+                    result = raw;
+
+                } else if (
+                    raw &&
+                    typeof raw === "object"
+                ) {
+                    meta = raw;
+
+                    result = firstArray(
+                        raw.pages,
+                        raw.results,
+                        raw.data,
+                        raw.urls
+                    );
+                }
+
             } catch (error) {
-                console.warn("Audit JSON could not be loaded. CSV fallback will be used.", error);
+                console.warn(
+                    "Audit JSON unavailable. CSV fallback will be used.",
+                    error
+                );
             }
 
-            if (!Array.isArray(pages) || pages.length === 0) {
-                pages = await loadCsvFile(DATA_PATHS.auditCsv);
+            if (!result.length) {
+                result = await loadCsv(
+                    PATHS.auditCsv
+                );
             }
 
             return {
-                pages: normalizePages(Array.isArray(pages) ? pages : []),
-                metadata
+                pages: result.map(normalizePage),
+                meta
             };
         }
 
-        async function loadCsvFile(path) {
+        async function loadJson(path) {
+            const response = await fetchFresh(path);
+
+            if (!response.ok) {
+                throw new Error(
+                    `${path} could not be loaded.`
+                );
+            }
+
+            return response.json();
+        }
+
+        async function loadCsv(path) {
             try {
-                const response = await fetchWithCacheBuster(path);
+                const response = await fetchFresh(path);
 
                 if (!response.ok) {
                     return [];
                 }
 
-                const csv = await response.text();
+                const text = await response.text();
 
-                if (!csv.trim()) {
-                    return [];
-                }
+                return text.trim()
+                    ? parseCsv(text)
+                    : [];
 
-                return parseCSV(csv);
             } catch (error) {
-                console.warn(`CSV file could not be loaded: ${path}`, error);
+                console.warn(
+                    `${path} could not be loaded.`,
+                    error
+                );
+
                 return [];
             }
         }
 
-        function fetchWithCacheBuster(path) {
-            const separator = path.includes("?") ? "&" : "?";
+        function fetchFresh(path) {
+            const separator = path.includes("?")
+                ? "&"
+                : "?";
 
-            return fetch(`${path}${separator}v=${Date.now()}`, {
-                cache: "no-store"
-            });
+            return fetch(
+                `${path}${separator}v=${Date.now()}`,
+                {
+                    cache: "no-store"
+                }
+            );
         }
 
-        function parseCSV(csv) {
+        function parseCsv(text) {
             const rows = [];
-            let currentRow = [];
-            let currentValue = "";
-            let insideQuotes = false;
+            let row = [];
+            let value = "";
+            let quoted = false;
 
-            for (let index = 0; index < csv.length; index += 1) {
-                const character = csv[index];
-                const nextCharacter = csv[index + 1];
+            for (
+                let index = 0;
+                index < text.length;
+                index += 1
+            ) {
+                const char = text[index];
+                const next = text[index + 1];
 
-                if (character === '"' && insideQuotes && nextCharacter === '"') {
-                    currentValue += '"';
+                if (
+                    char === '"' &&
+                    quoted &&
+                    next === '"'
+                ) {
+                    value += '"';
                     index += 1;
-                    continue;
-                }
 
-                if (character === '"') {
-                    insideQuotes = !insideQuotes;
-                    continue;
-                }
+                } else if (char === '"') {
+                    quoted = !quoted;
 
-                if (character === "," && !insideQuotes) {
-                    currentRow.push(currentValue);
-                    currentValue = "";
-                    continue;
-                }
+                } else if (
+                    char === "," &&
+                    !quoted
+                ) {
+                    row.push(value);
+                    value = "";
 
-                if ((character === "\n" || character === "\r") && !insideQuotes) {
-                    if (character === "\r" && nextCharacter === "\n") {
+                } else if (
+                    (
+                        char === "\n" ||
+                        char === "\r"
+                    ) &&
+                    !quoted
+                ) {
+                    if (
+                        char === "\r" &&
+                        next === "\n"
+                    ) {
                         index += 1;
                     }
 
-                    currentRow.push(currentValue);
+                    row.push(value);
 
-                    if (currentRow.some(value => value.trim() !== "")) {
-                        rows.push(currentRow);
+                    if (
+                        row.some(
+                            cell => cell.trim() !== ""
+                        )
+                    ) {
+                        rows.push(row);
                     }
 
-                    currentRow = [];
-                    currentValue = "";
-                    continue;
-                }
+                    row = [];
+                    value = "";
 
-                currentValue += character;
+                } else {
+                    value += char;
+                }
             }
 
-            if (currentValue.length > 0 || currentRow.length > 0) {
-                currentRow.push(currentValue);
+            if (
+                value.length ||
+                row.length
+            ) {
+                row.push(value);
 
-                if (currentRow.some(value => value.trim() !== "")) {
-                    rows.push(currentRow);
+                if (
+                    row.some(
+                        cell => cell.trim() !== ""
+                    )
+                ) {
+                    rows.push(row);
                 }
             }
 
@@ -1334,245 +2035,712 @@
                 return [];
             }
 
-            const headers = rows[0].map((header, index) => {
-                const cleaned = header.trim();
-                return index === 0 ? cleaned.replace(/^\uFEFF/, "") : cleaned;
-            });
+            const headers = rows[0].map(
+                (header, index) => {
+                    const clean = header.trim();
 
-            return rows.slice(1).map(values => {
-                const item = {};
+                    return index === 0
+                        ? clean.replace(/^\uFEFF/, "")
+                        : clean;
+                }
+            );
 
-                headers.forEach((header, index) => {
-                    item[header] = String(values[index] ?? "").trim();
+            return rows
+                .slice(1)
+                .map(values => {
+                    const item = {};
+
+                    headers.forEach(
+                        (header, index) => {
+                            item[header] = String(
+                                values[index] ?? ""
+                            ).trim();
+                        }
+                    );
+
+                    return item;
                 });
-
-                return item;
-            });
         }
 
-        function normalizePages(pages) {
-            return pages.map(page => {
-                const url = String(firstValue(page.url, page.page_url, page.link) || "").trim();
-                const finalUrl = String(firstValue(page.final_url, page.resolved_url, url) || "").trim();
-                const canonicalUrl = String(firstValue(page.canonical_url, page.canonical) || "").trim();
-                const metaDescription = String(firstValue(page.meta_description, page.description) || "").trim();
-                const robots = String(firstValue(page.robots_directives, page.robots, page.x_robots_tag) || "").trim();
-                const noindex = normalizeBoolean(firstValue(page.is_noindex, page.noindex))
-                    || robots.toLowerCase().includes("noindex");
+        function normalizePage(page) {
+            const url = stringValue(
+                first(
+                    page.url,
+                    page.page_url,
+                    page.link
+                )
+            );
 
-                return {
-                    ...page,
-                    url,
-                    source: String(firstValue(page.source, page.url_source) || "Unknown").trim(),
-                    final_url: finalUrl,
-                    status_code: normalizeStatus(
-                        firstValue(page.status_code, page.status, page.http_status, page.response_code)
-                    ),
-                    seo_score: normalizeNumber(
-                        firstValue(page.seo_score, page.score, page.audit_score),
-                        0
-                    ),
-                    priority: normalizePriority(firstValue(page.priority, page.severity, page.level)),
-                    title: String(
-                        firstValue(page.title, page.page_title, page.seo_title) || ""
-                    ).trim(),
-                    meta_description: metaDescription,
-                    canonical_url: canonicalUrl,
-                    robots_directives: robots,
-                    is_noindex: noindex,
-                    h1_count: normalizeCount(
-                        firstValue(page.h1_count, page.h1s, page.h1)
-                    ),
-                    h2_count: normalizeCount(
-                        firstValue(page.h2_count, page.h2s, page.h2)
-                    ),
-                    word_count: normalizeCount(
-                        firstValue(page.word_count, page.words, page.content_words)
-                    ),
-                    internal_links_count: normalizeCount(
-                        firstValue(page.internal_links_count, page.internal_links, page.links_internal)
-                    ),
-                    external_links_count: normalizeCount(
-                        firstValue(page.external_links_count, page.external_links, page.links_external)
-                    ),
-                    image_count: normalizeCount(
-                        firstValue(page.image_count, page.images_count, page.images)
-                    ),
-                    missing_alt_count: normalizeCount(
-                        firstValue(page.missing_alt_count, page.images_missing_alt, page.missing_alt)
-                    ),
-                    crawl_error: String(firstValue(page.crawl_error, page.error) || "").trim(),
-                    crawl_timestamp: String(firstValue(page.crawl_timestamp, page.crawled_at) || "").trim(),
-                    issue_count: normalizeCount(firstValue(page.issue_count, page.issues_count)),
-                    exact_actions: String(
-                        firstValue(page.exact_actions, page.actions, page.recommended_action) || ""
-                    ).trim()
-                };
-            });
-        }
+            const finalUrl = stringValue(
+                first(
+                    page.final_url,
+                    page.resolved_url,
+                    url
+                )
+            );
 
-        function normalizeIssues(issues) {
-            return issues.map(issue => ({
-                ...issue,
-                url: String(firstValue(issue.url, issue.page_url, issue.link) || "").trim(),
-                severity: normalizePriority(
-                    firstValue(issue.severity, issue.priority, issue.level)
+            const canonical = stringValue(
+                first(
+                    page.canonical_url,
+                    page.canonical
+                )
+            );
+
+            const robots = stringValue(
+                first(
+                    page.robots_directives,
+                    page.robots,
+                    page.x_robots_tag
+                )
+            );
+
+            return {
+                ...page,
+
+                url,
+
+                final_url: finalUrl,
+
+                source: stringValue(
+                    first(
+                        page.source,
+                        page.url_source,
+                        "Unknown"
+                    )
                 ),
-                issue: String(
-                    firstValue(issue.issue, issue.issue_type, issue.problem, issue.message) || "SEO issue"
-                ).trim(),
-                action: String(
-                    firstValue(
-                        issue.action,
-                        issue.recommended_action,
-                        issue.recommendation,
-                        issue.fix,
-                        issue.suggested_action
-                    ) || "Review the page and correct the reported issue."
-                ).trim()
+
+                status_code: normalizeStatus(
+                    first(
+                        page.status_code,
+                        page.status,
+                        page.http_status,
+                        page.response_code
+                    )
+                ),
+
+                seo_score: numberValue(
+                    first(
+                        page.seo_score,
+                        page.score,
+                        page.audit_score
+                    )
+                ),
+
+                priority: normalizePriority(
+                    first(
+                        page.priority,
+                        page.severity,
+                        page.level
+                    )
+                ),
+
+                title: stringValue(
+                    first(
+                        page.title,
+                        page.page_title,
+                        page.seo_title
+                    )
+                ),
+
+                meta_description: stringValue(
+                    first(
+                        page.meta_description,
+                        page.description
+                    )
+                ),
+
+                canonical_url: canonical,
+
+                robots_directives: robots,
+
+                is_noindex:
+                    boolValue(
+                        first(
+                            page.is_noindex,
+                            page.noindex
+                        )
+                    ) ||
+                    robots
+                        .toLowerCase()
+                        .includes("noindex"),
+
+                h1_count: countValue(
+                    first(
+                        page.h1_count,
+                        page.h1s,
+                        page.h1
+                    )
+                ),
+
+                h2_count: countValue(
+                    first(
+                        page.h2_count,
+                        page.h2s,
+                        page.h2
+                    )
+                ),
+
+                word_count: countValue(
+                    first(
+                        page.word_count,
+                        page.words,
+                        page.content_words
+                    )
+                ),
+
+                internal_links_count: countValue(
+                    first(
+                        page.internal_links_count,
+                        page.internal_links,
+                        page.links_internal
+                    )
+                ),
+
+                external_links_count: countValue(
+                    first(
+                        page.external_links_count,
+                        page.external_links,
+                        page.links_external
+                    )
+                ),
+
+                image_count: countValue(
+                    first(
+                        page.image_count,
+                        page.images_count,
+                        page.images
+                    )
+                ),
+
+                missing_alt_count: countValue(
+                    first(
+                        page.missing_alt_count,
+                        page.images_missing_alt,
+                        page.missing_alt
+                    )
+                ),
+
+                crawl_error: stringValue(
+                    first(
+                        page.crawl_error,
+                        page.error
+                    )
+                ),
+
+                crawl_timestamp: stringValue(
+                    first(
+                        page.crawl_timestamp,
+                        page.crawled_at
+                    )
+                ),
+
+                issue_count: countValue(
+                    first(
+                        page.issue_count,
+                        page.issues_count
+                    )
+                ),
+
+                exact_actions: stringValue(
+                    first(
+                        page.exact_actions,
+                        page.actions,
+                        page.recommended_action
+                    )
+                )
+            };
+        }
+
+        function normalizeIssues(rows) {
+            return rows.map(row => ({
+                url: stringValue(
+                    first(
+                        row.url,
+                        row.page_url,
+                        row.link
+                    )
+                ),
+
+                severity: normalizePriority(
+                    first(
+                        row.severity,
+                        row.priority,
+                        row.level
+                    )
+                ),
+
+                issue: stringValue(
+                    first(
+                        row.issue,
+                        row.issue_type,
+                        row.problem,
+                        row.message,
+                        "SEO issue"
+                    )
+                ),
+
+                action: stringValue(
+                    first(
+                        row.action,
+                        row.recommended_action,
+                        row.recommendation,
+                        row.fix,
+                        "Review and correct this issue."
+                    )
+                )
             }));
         }
 
-        function normalizeChanges(changes) {
-            return changes.map(change => ({
-                date: String(
-                    firstValue(change.date, change.crawl_date, change.timestamp, change.detected_at) || "—"
-                ).trim(),
-                url: String(
-                    firstValue(change.url, change.page_url, change.link) || "—"
-                ).trim(),
-                change: String(
-                    firstValue(
-                        change.change_detected,
-                        change.change,
-                        change.field,
-                        change.change_type
-                    ) || "Change detected"
-                ).trim(),
-                old_value: String(
-                    firstValue(change.old_value, change.previous_value, change.before) || "—"
-                ).trim(),
-                new_value: String(
-                    firstValue(change.new_value, change.current_value, change.after) || "—"
-                ).trim()
+        function normalizeChanges(rows) {
+            return rows.map(row => ({
+                date: stringValue(
+                    first(
+                        row.date,
+                        row.crawl_date,
+                        row.timestamp,
+                        row.detected_at,
+                        "—"
+                    )
+                ),
+
+                url: stringValue(
+                    first(
+                        row.url,
+                        row.page_url,
+                        row.link,
+                        "—"
+                    )
+                ),
+
+                change: stringValue(
+                    first(
+                        row.change_detected,
+                        row.change,
+                        row.field,
+                        row.change_type,
+                        "Change detected"
+                    )
+                ),
+
+                old_value: stringValue(
+                    first(
+                        row.old_value,
+                        row.previous_value,
+                        row.before,
+                        "—"
+                    )
+                ),
+
+                new_value: stringValue(
+                    first(
+                        row.new_value,
+                        row.current_value,
+                        row.after,
+                        "—"
+                    )
+                )
             }));
+        }
+
+        function normalizeGscRow(row) {
+            return {
+                page: stringValue(row.page),
+
+                current_clicks:
+                    numberValue(row.current_clicks),
+
+                previous_clicks:
+                    numberValue(row.previous_clicks),
+
+                clicks_change:
+                    numberValue(row.clicks_change),
+
+                current_impressions:
+                    numberValue(row.current_impressions),
+
+                previous_impressions:
+                    numberValue(row.previous_impressions),
+
+                impressions_change:
+                    numberValue(row.impressions_change),
+
+                current_ctr_percent:
+                    numberValue(row.current_ctr_percent),
+
+                previous_ctr_percent:
+                    numberValue(row.previous_ctr_percent),
+
+                current_position:
+                    numberValue(row.current_position),
+
+                previous_position:
+                    numberValue(row.previous_position),
+
+                position_change:
+                    numberValue(row.position_change)
+            };
         }
 
         function renderOverview() {
-            const criticalCount = issuesData.filter(issue => issue.severity === "critical").length;
-            const highCount = issuesData.filter(issue => issue.severity === "high").length;
-            const mediumCount = issuesData.filter(issue => issue.severity === "medium").length;
-            const scores = pagesData
-                .map(page => Number(page.seo_score))
-                .filter(score => Number.isFinite(score));
+            const scores = pages
+                .map(page => page.seo_score)
+                .filter(Number.isFinite);
 
-            const averageScore = scores.length
-                ? Math.round(scores.reduce((sum, score) => sum + score, 0) / scores.length)
+            const average = scores.length
+                ? Math.round(
+                    scores.reduce(
+                        (sum, score) => sum + score,
+                        0
+                    ) / scores.length
+                )
                 : 0;
 
-            const status200Count = pagesData.filter(page => Number.parseInt(page.status_code, 10) === 200).length;
-            const errorPages = pagesData.filter(isErrorPage).length;
-            const missingH1Pages = pagesData.filter(page => Number(page.h1_count) === 0).length;
-            const missingMetaPages = pagesData.filter(page => !page.meta_description).length;
-            const missingAltPages = pagesData.filter(page => Number(page.missing_alt_count) > 0).length;
-            const noindexPages = pagesData.filter(page => page.is_noindex).length;
-            const highPriorityPages = pagesData.filter(page => ["critical", "high"].includes(page.priority)).length;
-            const canonicalProblems = pagesData.filter(page => getCanonicalState(page) !== "ok").length;
-            const goodPages = pagesData.filter(page => Number(page.seo_score) >= 80).length;
-            const totalMissingAlt = pagesData.reduce((sum, page) => sum + safeNumber(page.missing_alt_count), 0);
+            const errorPages = pages.filter(
+                isErrorPage
+            );
 
-            setText("health-score", averageScore);
-            setText("total-pages", pagesData.length);
-            setText("status-200-count", status200Count);
-            setText("error-pages-count", errorPages);
-            setText("missing-h1-count", missingH1Pages);
-            setText("missing-meta-count", missingMetaPages);
-            setText("missing-alt-pages-count", missingAltPages);
-            setText("noindex-pages-count", noindexPages);
+            const highPriorityPages = pages.filter(
+                page => [
+                    "critical",
+                    "high"
+                ].includes(page.priority)
+            );
 
-            setText("critical-count", criticalCount);
-            setText("high-count", highCount);
-            setText("medium-count", mediumCount);
+            setText("health-score", average);
+            setText("total-pages", pages.length);
 
-            setText("summary-issues", issuesData.length);
-            setText("summary-high-priority-pages", highPriorityPages);
-            setText("summary-canonical-problems", canonicalProblems);
-            setText("summary-good-pages", goodPages);
-            setText("summary-missing-alt-total", totalMissingAlt);
+            setText(
+                "status-200-count",
+                pages.filter(
+                    page =>
+                        Number(page.status_code) === 200
+                ).length
+            );
+
+            setText(
+                "error-pages-count",
+                errorPages.length
+            );
+
+            setText(
+                "missing-h1-count",
+                pages.filter(
+                    page =>
+                        Number(page.h1_count) === 0
+                ).length
+            );
+
+            setText(
+                "missing-meta-count",
+                pages.filter(
+                    page =>
+                        !page.meta_description
+                ).length
+            );
+
+            setText(
+                "missing-alt-pages-count",
+                pages.filter(
+                    page =>
+                        Number(
+                            page.missing_alt_count
+                        ) > 0
+                ).length
+            );
+
+            setText(
+                "noindex-pages-count",
+                pages.filter(
+                    page =>
+                        page.is_noindex
+                ).length
+            );
+
+            setText(
+                "critical-count",
+                issues.filter(
+                    issue =>
+                        issue.severity === "critical"
+                ).length
+            );
+
+            setText(
+                "high-count",
+                issues.filter(
+                    issue =>
+                        issue.severity === "high"
+                ).length
+            );
+
+            setText(
+                "medium-count",
+                issues.filter(
+                    issue =>
+                        issue.severity === "medium"
+                ).length
+            );
+
+            setText(
+                "summary-issues",
+                issues.length
+            );
+
+            setText(
+                "summary-high-priority-pages",
+                highPriorityPages.length
+            );
+
+            setText(
+                "summary-canonical-problems",
+                pages.filter(
+                    page =>
+                        canonicalState(page) !== "ok"
+                ).length
+            );
+
+            setText(
+                "summary-good-pages",
+                pages.filter(
+                    page =>
+                        page.seo_score >= 80
+                ).length
+            );
+
+            setText(
+                "summary-missing-alt-total",
+                pages.reduce(
+                    (sum, page) =>
+                        sum +
+                        numberValue(
+                            page.missing_alt_count
+                        ),
+                    0
+                )
+            );
         }
 
-        function renderPagesTable(pages) {
-            const container = document.getElementById("pages-table-container");
+        function renderPages() {
+            const container = document.getElementById(
+                "pages-table-container"
+            );
 
             if (!pages.length) {
                 container.innerHTML = emptyState(
                     "No page audit data found.",
-                    "Run the crawler and confirm that the audit files exist."
+                    "Run the crawler and confirm the audit files exist."
                 );
-                setText("visible-pages-count", "0 pages");
+
                 return;
             }
 
-            const rows = pages.map((page, index) => {
-                const score = clampNumber(page.seo_score, 0, 100);
-                const scoreClass = score >= 80
-                    ? "score-good"
-                    : score >= 50
-                        ? "score-average"
-                        : "score-bad";
+            const rows = pages.map(
+                (page, index) => {
+                    const scoreClass =
+                        page.seo_score >= 80
+                            ? "score-good"
+                            : page.seo_score >= 50
+                                ? "score-average"
+                                : "score-bad";
 
-                const canonicalState = getCanonicalState(page);
-                const indexState = page.is_noindex ? "noindex" : "index";
-                const metaState = page.meta_description ? "Present" : "Missing";
-                const metaBadge = page.meta_description
-                    ? '<span class="badge badge-ok">Present</span>'
-                    : '<span class="badge badge-high">Missing</span>';
+                    const canonical =
+                        canonicalState(page);
 
-                const canonicalBadge = canonicalState === "ok"
-                    ? '<span class="badge badge-ok">Correct</span>'
-                    : canonicalState === "missing"
-                        ? '<span class="badge badge-high">Missing</span>'
-                        : '<span class="badge badge-medium">Different</span>';
+                    const canonicalBadge =
+                        canonical === "ok"
+                            ? badge(
+                                "Correct",
+                                "ok"
+                            )
+                            : canonical === "missing"
+                                ? badge(
+                                    "Missing",
+                                    "high"
+                                )
+                                : badge(
+                                    "Different",
+                                    "medium"
+                                );
 
-                const indexBadge = page.is_noindex
-                    ? '<span class="badge badge-critical">Noindex</span>'
-                    : '<span class="badge badge-ok">Indexable</span>';
+                    return `
+                        <tr
+                            data-search="${
+                                attr(
+                                    `${page.url} ${page.title}`
+                                        .toLowerCase()
+                                )
+                            }"
+                            data-status="${
+                                attr(
+                                    String(
+                                        page.status_code
+                                    ).toLowerCase()
+                                )
+                            }"
+                            data-score="${page.seo_score}"
+                            data-priority="${
+                                attr(page.priority)
+                            }"
+                            data-index="${
+                                page.is_noindex
+                                    ? "noindex"
+                                    : "index"
+                            }"
+                        >
+                            <td>
+                                <a
+                                    class="url-link"
+                                    href="${attr(page.url)}"
+                                    target="_blank"
+                                    rel="noopener noreferrer"
+                                >
+                                    ${esc(shortUrl(page.url))}
+                                </a>
+                            </td>
 
-                const priorityBadge = `<span class="badge badge-${page.priority === "critical" ? "critical" : page.priority === "high" ? "high" : page.priority === "medium" ? "medium" : "low"}">${escapeHtml(capitalize(page.priority))}</span>`;
+                            <td>
+                                ${
+                                    statusBadge(
+                                        page.status_code
+                                    )
+                                }
+                            </td>
 
-                return `
-                    <tr
-                        data-url="${escapeAttribute(page.url.toLowerCase())}"
-                        data-title="${escapeAttribute(page.title.toLowerCase())}"
-                        data-status="${escapeAttribute(String(page.status_code).toLowerCase())}"
-                        data-score="${score}"
-                        data-priority="${escapeAttribute(page.priority)}"
-                        data-index="${indexState}"
-                    >
-                        <td>
-                            <a class="url-link" href="${escapeAttribute(page.url)}" target="_blank" rel="noopener noreferrer" title="${escapeAttribute(page.url)}">
-                                ${escapeHtml(shortenUrl(page.url))}
-                            </a>
-                        </td>
-                        <td>${statusBadge(page.status_code)}</td>
-                        <td><span class="score-text ${scoreClass}">${score}</span></td>
-                        <td>${priorityBadge}</td>
-                        <td class="title-cell" title="${escapeAttribute(page.title)}">${escapeHtml(shortenText(page.title || "No title", 60))}</td>
-                        <td class="meta-cell" title="${escapeAttribute(page.meta_description)}">${metaBadge}<div style="margin-top:5px">${escapeHtml(shortenText(page.meta_description || "No meta description", 70))}</div></td>
-                        <td class="canonical-cell">${canonicalBadge}</td>
-                        <td>${indexBadge}</td>
-                        <td>${escapeHtml(displayCount(page.h1_count))}</td>
-                        <td>${escapeHtml(displayCount(page.h2_count))}</td>
-                        <td>${escapeHtml(displayCount(page.word_count))}</td>
-                        <td>${escapeHtml(displayCount(page.internal_links_count))}</td>
-                        <td>${escapeHtml(displayCount(page.external_links_count))}</td>
-                        <td>${escapeHtml(displayCount(page.image_count))}</td>
-                        <td>${escapeHtml(displayCount(page.missing_alt_count))}</td>
-                        <td class="action-cell" title="${escapeAttribute(page.exact_actions)}">${escapeHtml(shortenText(page.exact_actions || "No action recorded", 90))}</td>
-                        <td><button class="view-button" type="button" data-page-index="${index}">View</button></td>
-                    </tr>
-                `;
-            }).join("");
+                            <td class="${scoreClass}">
+                                ${page.seo_score}
+                            </td>
+
+                            <td>
+                                ${
+                                    badge(
+                                        capitalize(
+                                            page.priority
+                                        ),
+                                        page.priority
+                                    )
+                                }
+                            </td>
+
+                            <td class="title-cell">
+                                ${
+                                    esc(
+                                        shortText(
+                                            page.title ||
+                                            "No title",
+                                            60
+                                        )
+                                    )
+                                }
+                            </td>
+
+                            <td class="meta-cell">
+                                ${
+                                    page.meta_description
+                                        ? badge(
+                                            "Present",
+                                            "ok"
+                                        )
+                                        : badge(
+                                            "Missing",
+                                            "high"
+                                        )
+                                }
+
+                                <div style="margin-top:5px">
+                                    ${
+                                        esc(
+                                            shortText(
+                                                page.meta_description ||
+                                                "No meta description",
+                                                70
+                                            )
+                                        )
+                                    }
+                                </div>
+                            </td>
+
+                            <td class="canonical-cell">
+                                ${canonicalBadge}
+                            </td>
+
+                            <td>
+                                ${
+                                    page.is_noindex
+                                        ? badge(
+                                            "Noindex",
+                                            "critical"
+                                        )
+                                        : badge(
+                                            "Indexable",
+                                            "ok"
+                                        )
+                                }
+                            </td>
+
+                            <td>
+                                ${display(page.h1_count)}
+                            </td>
+
+                            <td>
+                                ${display(page.h2_count)}
+                            </td>
+
+                            <td>
+                                ${display(page.word_count)}
+                            </td>
+
+                            <td>
+                                ${
+                                    display(
+                                        page.internal_links_count
+                                    )
+                                }
+                            </td>
+
+                            <td>
+                                ${
+                                    display(
+                                        page.external_links_count
+                                    )
+                                }
+                            </td>
+
+                            <td>
+                                ${display(page.image_count)}
+                            </td>
+
+                            <td>
+                                ${
+                                    display(
+                                        page.missing_alt_count
+                                    )
+                                }
+                            </td>
+
+                            <td class="action-cell">
+                                ${
+                                    esc(
+                                        shortText(
+                                            page.exact_actions ||
+                                            "No action recorded",
+                                            90
+                                        )
+                                    )
+                                }
+                            </td>
+
+                            <td>
+                                <button
+                                    class="view-button"
+                                    type="button"
+                                    data-index="${index}"
+                                >
+                                    View
+                                </button>
+                            </td>
+                        </tr>
+                    `;
+                }
+            ).join("");
 
             container.innerHTML = `
                 <div class="table-wrap">
@@ -1598,69 +2766,87 @@
                                 <th>Details</th>
                             </tr>
                         </thead>
-                        <tbody>${rows}</tbody>
+
+                        <tbody>
+                            ${rows}
+                        </tbody>
                     </table>
                 </div>
             `;
 
-            container.querySelectorAll(".view-button").forEach(button => {
-                button.addEventListener("click", () => {
-                    const pageIndex = Number(button.dataset.pageIndex);
-                    openPageDetails(pagesData[pageIndex]);
+            container
+                .querySelectorAll(".view-button")
+                .forEach(button => {
+                    button.addEventListener(
+                        "click",
+                        () => {
+                            openDrawer(
+                                pages[
+                                    Number(
+                                        button.dataset.index
+                                    )
+                                ]
+                            );
+                        }
+                    );
                 });
-            });
 
-            setText("visible-pages-count", `${pages.length} ${pages.length === 1 ? "page" : "pages"}`);
+            setText(
+                "visible-pages-count",
+                `${pages.length} pages`
+            );
         }
 
-        function populateIssueTypeFilter() {
-            const select = document.getElementById("filter-issue-type");
-            const issueTypes = [...new Set(
-                issuesData
-                    .map(issue => issue.issue.trim())
-                    .filter(Boolean)
-            )].sort((a, b) => a.localeCompare(b));
+        function renderIssues() {
+            const select = document.getElementById(
+                "filter-issue-type"
+            );
 
-            issueTypes.forEach(issueType => {
-                const option = document.createElement("option");
-                option.value = issueType.toLowerCase();
-                option.textContent = issueType;
-                select.appendChild(option);
-            });
-        }
+            [
+                ...new Set(
+                    issues
+                        .map(issue => issue.issue)
+                        .filter(Boolean)
+                )
+            ]
+                .sort(
+                    (a, b) =>
+                        a.localeCompare(b)
+                )
+                .forEach(type => {
+                    const option =
+                        document.createElement(
+                            "option"
+                        );
 
-        function renderIssues(issues) {
-            const container = document.getElementById("issues-container");
+                    option.value =
+                        type.toLowerCase();
+
+                    option.textContent =
+                        type;
+
+                    select.appendChild(option);
+                });
+
+            const container = document.getElementById(
+                "issues-container"
+            );
 
             if (!issues.length) {
                 container.innerHTML = emptyState(
                     "No SEO issues found.",
                     "The crawler did not report any issues."
                 );
-                setText("visible-issues-count", "0 issues");
+
                 return;
             }
 
-            const rows = issues.map(issue => `
-                <tr
-                    data-search="${escapeAttribute(`${issue.url} ${issue.issue} ${issue.action}`.toLowerCase())}"
-                    data-severity="${escapeAttribute(issue.severity)}"
-                    data-issue-type="${escapeAttribute(issue.issue.toLowerCase())}"
-                >
-                    <td>
-                        <a class="url-link" href="${escapeAttribute(issue.url)}" target="_blank" rel="noopener noreferrer" title="${escapeAttribute(issue.url)}">
-                            ${escapeHtml(shortenUrl(issue.url))}
-                        </a>
-                    </td>
-                    <td><span class="badge badge-${issue.severity === "critical" ? "critical" : issue.severity === "high" ? "high" : issue.severity === "medium" ? "medium" : "low"}">${escapeHtml(capitalize(issue.severity))}</span></td>
-                    <td>${escapeHtml(issue.issue)}</td>
-                    <td class="action-cell">${escapeHtml(issue.action)}</td>
-                </tr>
-            `).join("");
-
             container.innerHTML = `
                 <div class="table-wrap">
-                    <table class="issues-table" id="issues-table">
+                    <table
+                        class="compact"
+                        id="issues-table"
+                    >
                         <thead>
                             <tr>
                                 <th>URL</th>
@@ -1669,39 +2855,364 @@
                                 <th>Recommended Action</th>
                             </tr>
                         </thead>
-                        <tbody>${rows}</tbody>
+
+                        <tbody>
+                            ${
+                                issues.map(issue => `
+                                    <tr
+                                        data-search="${
+                                            attr(
+                                                `${issue.url} ${issue.issue} ${issue.action}`
+                                                    .toLowerCase()
+                                            )
+                                        }"
+                                        data-severity="${
+                                            attr(
+                                                issue.severity
+                                            )
+                                        }"
+                                        data-type="${
+                                            attr(
+                                                issue.issue
+                                                    .toLowerCase()
+                                            )
+                                        }"
+                                    >
+                                        <td>
+                                            <a
+                                                class="url-link"
+                                                href="${
+                                                    attr(
+                                                        issue.url
+                                                    )
+                                                }"
+                                                target="_blank"
+                                                rel="noopener noreferrer"
+                                            >
+                                                ${
+                                                    esc(
+                                                        shortUrl(
+                                                            issue.url
+                                                        )
+                                                    )
+                                                }
+                                            </a>
+                                        </td>
+
+                                        <td>
+                                            ${
+                                                badge(
+                                                    capitalize(
+                                                        issue.severity
+                                                    ),
+                                                    issue.severity
+                                                )
+                                            }
+                                        </td>
+
+                                        <td>
+                                            ${esc(issue.issue)}
+                                        </td>
+
+                                        <td class="action-cell">
+                                            ${esc(issue.action)}
+                                        </td>
+                                    </tr>
+                                `).join("")
+                            }
+                        </tbody>
                     </table>
                 </div>
             `;
 
-            setText("visible-issues-count", `${issues.length} ${issues.length === 1 ? "issue" : "issues"}`);
+            setText(
+                "visible-issues-count",
+                `${issues.length} issues`
+            );
         }
 
-        function renderChangeLog() {
-            const container = document.getElementById("changelog-container");
+        function renderPerformance() {
+            const current =
+                gscSummary.current_period || {};
 
-            if (!changesData.length) {
-                container.innerHTML = emptyState(
-                    "No changes detected yet.",
-                    "Run at least two crawls to create a comparison."
+            const previous =
+                gscSummary.previous_period || {};
+
+            setText(
+                "gsc-clicks",
+                whole(current.clicks)
+            );
+
+            setText(
+                "gsc-impressions",
+                whole(current.impressions)
+            );
+
+            setText(
+                "gsc-ctr",
+                `${decimal(current.ctr_percent)}%`
+            );
+
+            setText(
+                "gsc-position",
+                decimal(current.position)
+            );
+
+            setText(
+                "gsc-clicks-change",
+                comparison(
+                    current.clicks,
+                    previous.clicks,
+                    "clicks"
+                )
+            );
+
+            setText(
+                "gsc-impressions-change",
+                comparison(
+                    current.impressions,
+                    previous.impressions,
+                    "impressions"
+                )
+            );
+
+            setText(
+                "gsc-ctr-change",
+                `Previous period: ${
+                    decimal(
+                        previous.ctr_percent
+                    )
+                }%`
+            );
+
+            setText(
+                "gsc-position-change",
+                `Previous period: ${
+                    decimal(
+                        previous.position
+                    )
+                }`
+            );
+
+            setText(
+                "gsc-page-count",
+                `${gscRows.length} pages`
+            );
+
+            if (
+                current.start_date &&
+                current.end_date &&
+                previous.start_date &&
+                previous.end_date
+            ) {
+                setText(
+                    "gsc-period-label",
+                    `${current.start_date} to ${current.end_date}, ` +
+                    `compared with ${previous.start_date} ` +
+                    `to ${previous.end_date}`
                 );
-                setText("changes-count", "0 changes");
+            }
+
+            const container =
+                document.getElementById(
+                    "performance-table-container"
+                );
+
+            if (!gscRows.length) {
+                container.innerHTML =
+                    emptyState(
+                        "No Search Console page data found.",
+                        "Run the daily workflow again."
+                    );
+
                 return;
             }
 
-            const rows = changesData.slice(0, 100).map(change => `
-                <tr>
-                    <td>${escapeHtml(change.date)}</td>
-                    <td title="${escapeAttribute(change.url)}">${escapeHtml(shortenUrl(change.url))}</td>
-                    <td>${escapeHtml(change.change)}</td>
-                    <td>${escapeHtml(shortenText(change.old_value, 100))}</td>
-                    <td>${escapeHtml(shortenText(change.new_value, 100))}</td>
-                </tr>
-            `).join("");
+            container.innerHTML = `
+                <div class="table-wrap">
+                    <table
+                        class="performance"
+                        id="performance-table"
+                    >
+                        <thead>
+                            <tr>
+                                <th>Page</th>
+                                <th>Clicks</th>
+                                <th>Previous Clicks</th>
+                                <th>Clicks Change</th>
+                                <th>Impressions</th>
+                                <th>Previous Impressions</th>
+                                <th>Impressions Change</th>
+                                <th>CTR</th>
+                                <th>Position</th>
+                                <th>Recommended Action</th>
+                            </tr>
+                        </thead>
+
+                        <tbody>
+                            ${
+                                gscRows.map(row => {
+                                    const drop =
+                                        row.impressions_change < 0;
+
+                                    const zeroClicks =
+                                        row.current_impressions > 0 &&
+                                        row.current_clicks === 0;
+
+                                    const opportunity =
+                                        row.current_position >= 8 &&
+                                        row.current_position <= 20;
+
+                                    return `
+                                        <tr
+                                            data-search="${
+                                                attr(
+                                                    row.page
+                                                        .toLowerCase()
+                                                )
+                                            }"
+                                            data-impressions="${
+                                                row.current_impressions
+                                            }"
+                                            data-drop="${drop}"
+                                            data-zero="${
+                                                zeroClicks
+                                            }"
+                                            data-position="${
+                                                opportunity
+                                            }"
+                                        >
+                                            <td>
+                                                <a
+                                                    class="url-link"
+                                                    href="${
+                                                        attr(
+                                                            row.page
+                                                        )
+                                                    }"
+                                                    target="_blank"
+                                                    rel="noopener noreferrer"
+                                                >
+                                                    ${
+                                                        esc(
+                                                            shortUrl(
+                                                                row.page
+                                                            )
+                                                        )
+                                                    }
+                                                </a>
+                                            </td>
+
+                                            <td>
+                                                ${
+                                                    whole(
+                                                        row.current_clicks
+                                                    )
+                                                }
+                                            </td>
+
+                                            <td>
+                                                ${
+                                                    whole(
+                                                        row.previous_clicks
+                                                    )
+                                                }
+                                            </td>
+
+                                            <td class="${
+                                                changeClass(
+                                                    row.clicks_change
+                                                )
+                                            }">
+                                                ${
+                                                    signed(
+                                                        row.clicks_change
+                                                    )
+                                                }
+                                            </td>
+
+                                            <td>
+                                                ${
+                                                    whole(
+                                                        row.current_impressions
+                                                    )
+                                                }
+                                            </td>
+
+                                            <td>
+                                                ${
+                                                    whole(
+                                                        row.previous_impressions
+                                                    )
+                                                }
+                                            </td>
+
+                                            <td class="${
+                                                changeClass(
+                                                    row.impressions_change
+                                                )
+                                            }">
+                                                ${
+                                                    signed(
+                                                        row.impressions_change
+                                                    )
+                                                }
+                                            </td>
+
+                                            <td>
+                                                ${
+                                                    decimal(
+                                                        row.current_ctr_percent
+                                                    )
+                                                }%
+                                            </td>
+
+                                            <td>
+                                                ${
+                                                    decimal(
+                                                        row.current_position
+                                                    )
+                                                }
+                                            </td>
+
+                                            <td class="action-cell">
+                                                ${
+                                                    esc(
+                                                        performanceAction(
+                                                            row
+                                                        )
+                                                    )
+                                                }
+                                            </td>
+                                        </tr>
+                                    `;
+                                }).join("")
+                            }
+                        </tbody>
+                    </table>
+                </div>
+            `;
+        }
+
+        function renderChanges() {
+            const container =
+                document.getElementById(
+                    "changelog-container"
+                );
+
+            if (!changes.length) {
+                container.innerHTML =
+                    emptyState(
+                        "No changes detected yet.",
+                        "Run at least two crawls to create a comparison."
+                    );
+
+                return;
+            }
 
             container.innerHTML = `
                 <div class="table-wrap">
-                    <table class="changes-table">
+                    <table class="changes">
                         <thead>
                             <tr>
                                 <th>Date</th>
@@ -1711,468 +3222,1189 @@
                                 <th>New Value</th>
                             </tr>
                         </thead>
-                        <tbody>${rows}</tbody>
+
+                        <tbody>
+                            ${
+                                changes
+                                    .slice(0, 100)
+                                    .map(change => `
+                                        <tr>
+                                            <td>
+                                                ${
+                                                    esc(
+                                                        change.date
+                                                    )
+                                                }
+                                            </td>
+
+                                            <td>
+                                                ${
+                                                    esc(
+                                                        shortUrl(
+                                                            change.url
+                                                        )
+                                                    )
+                                                }
+                                            </td>
+
+                                            <td>
+                                                ${
+                                                    esc(
+                                                        change.change
+                                                    )
+                                                }
+                                            </td>
+
+                                            <td>
+                                                ${
+                                                    esc(
+                                                        shortText(
+                                                            change.old_value,
+                                                            100
+                                                        )
+                                                    )
+                                                }
+                                            </td>
+
+                                            <td>
+                                                ${
+                                                    esc(
+                                                        shortText(
+                                                            change.new_value,
+                                                            100
+                                                        )
+                                                    )
+                                                }
+                                            </td>
+                                        </tr>
+                                    `).join("")
+                            }
+                        </tbody>
                     </table>
                 </div>
             `;
 
-            setText("changes-count", `${changesData.length} ${changesData.length === 1 ? "change" : "changes"}`);
+            setText(
+                "changes-count",
+                `${changes.length} changes`
+            );
         }
 
-        function renderSystemInfo() {
-            const crawlErrors = pagesData.filter(page => page.crawl_error || isErrorPage(page)).length;
-            const crawlLabel = getLastCrawlLabel();
+        function renderSystem() {
+            setText(
+                "system-last-crawl",
+                lastCrawl()
+            );
 
-            setText("system-last-crawl", crawlLabel);
-            setText("system-total-pages", pagesData.length);
-            setText("system-crawl-errors", crawlErrors);
+            setText(
+                "system-total-pages",
+                pages.length
+            );
+
+            setText(
+                "system-crawl-errors",
+                pages.filter(
+                    isErrorPage
+                ).length
+            );
+
+            setText(
+                "system-gsc-property",
+                gscSummary.site_url ||
+                "Not recorded"
+            );
+
+            setText(
+                "system-gsc-pages",
+                gscSummary.page_count ??
+                gscRows.length
+            );
         }
 
-        function applyPageFilters() {
-            const table = document.getElementById("pages-table");
+        function renderDates() {
+            const crawl = lastCrawl();
+
+            [
+                "overview",
+                "pages",
+                "issues",
+                "changes",
+                "system"
+            ].forEach(page => {
+                setText(
+                    `last-updated-${page}`,
+                    `Last crawl: ${crawl}`
+                );
+            });
+
+            if (gscSummary.generated_at) {
+                const parsed =
+                    new Date(
+                        gscSummary.generated_at
+                    );
+
+                setText(
+                    "last-updated-performance",
+                    `Updated: ${
+                        Number.isNaN(
+                            parsed.getTime()
+                        )
+                            ? gscSummary.generated_at
+                            : parsed.toLocaleString()
+                    }`
+                );
+            }
+        }
+
+        function filterPages() {
+            const table =
+                document.getElementById(
+                    "pages-table"
+                );
 
             if (!table) {
                 return;
             }
 
-            const search = document.getElementById("search-url").value.trim().toLowerCase();
-            const statusFilter = document.getElementById("filter-status").value;
-            const scoreFilter = document.getElementById("filter-score").value;
-            const priorityFilter = document.getElementById("filter-priority").value;
-            const indexFilter = document.getElementById("filter-index").value;
-            const rows = [...table.querySelectorAll("tbody tr")];
+            const search =
+                document
+                    .getElementById("search-url")
+                    .value
+                    .trim()
+                    .toLowerCase();
 
-            let visibleCount = 0;
+            const status =
+                document
+                    .getElementById("filter-status")
+                    .value;
 
-            rows.forEach(row => {
-                const rowUrl = row.dataset.url || "";
-                const rowTitle = row.dataset.title || "";
-                const rowStatus = row.dataset.status || "";
-                const rowScore = Number(row.dataset.score || 0);
-                const rowPriority = row.dataset.priority || "low";
-                const rowIndex = row.dataset.index || "index";
+            const score =
+                document
+                    .getElementById("filter-score")
+                    .value;
 
-                const searchMatch = !search || rowUrl.includes(search) || rowTitle.includes(search);
-                const statusMatch = matchStatusFilter(rowStatus, statusFilter);
-                const scoreMatch = matchScoreFilter(rowScore, scoreFilter);
-                const priorityMatch = !priorityFilter || rowPriority === priorityFilter;
-                const indexMatch = !indexFilter || rowIndex === indexFilter;
-                const show = searchMatch && statusMatch && scoreMatch && priorityMatch && indexMatch;
+            const priority =
+                document
+                    .getElementById("filter-priority")
+                    .value;
 
-                row.hidden = !show;
+            const indexState =
+                document
+                    .getElementById("filter-index")
+                    .value;
 
-                if (show) {
-                    visibleCount += 1;
-                }
-            });
+            let visible = 0;
 
-            setText("visible-pages-count", `${visibleCount} ${visibleCount === 1 ? "page" : "pages"}`);
+            table
+                .querySelectorAll("tbody tr")
+                .forEach(row => {
+                    const rowScore =
+                        Number(
+                            row.dataset.score
+                        );
+
+                    const show =
+                        (
+                            !search ||
+                            row.dataset.search
+                                .includes(search)
+                        ) &&
+                        statusMatches(
+                            row.dataset.status,
+                            status
+                        ) &&
+                        scoreMatches(
+                            rowScore,
+                            score
+                        ) &&
+                        (
+                            !priority ||
+                            row.dataset.priority ===
+                            priority
+                        ) &&
+                        (
+                            !indexState ||
+                            row.dataset.index ===
+                            indexState
+                        );
+
+                    row.hidden = !show;
+
+                    if (show) {
+                        visible += 1;
+                    }
+                });
+
+            setText(
+                "visible-pages-count",
+                `${visible} pages`
+            );
         }
 
-        function applyIssueFilters() {
-            const table = document.getElementById("issues-table");
+        function filterIssues() {
+            const table =
+                document.getElementById(
+                    "issues-table"
+                );
 
             if (!table) {
                 return;
             }
 
-            const search = document.getElementById("search-issues").value.trim().toLowerCase();
-            const severity = document.getElementById("filter-issue-severity").value;
-            const issueType = document.getElementById("filter-issue-type").value;
-            const rows = [...table.querySelectorAll("tbody tr")];
+            const search =
+                document
+                    .getElementById("search-issues")
+                    .value
+                    .trim()
+                    .toLowerCase();
 
-            let visibleCount = 0;
+            const severity =
+                document
+                    .getElementById(
+                        "filter-issue-severity"
+                    )
+                    .value;
+
+            const type =
+                document
+                    .getElementById(
+                        "filter-issue-type"
+                    )
+                    .value;
+
+            let visible = 0;
+
+            table
+                .querySelectorAll("tbody tr")
+                .forEach(row => {
+                    const show =
+                        (
+                            !search ||
+                            row.dataset.search
+                                .includes(search)
+                        ) &&
+                        (
+                            !severity ||
+                            row.dataset.severity ===
+                            severity
+                        ) &&
+                        (
+                            !type ||
+                            row.dataset.type === type
+                        );
+
+                    row.hidden = !show;
+
+                    if (show) {
+                        visible += 1;
+                    }
+                });
+
+            setText(
+                "visible-issues-count",
+                `${visible} issues`
+            );
+        }
+
+        function filterPerformance() {
+            const table =
+                document.getElementById(
+                    "performance-table"
+                );
+
+            if (!table) {
+                return;
+            }
+
+            const search =
+                document
+                    .getElementById(
+                        "search-performance"
+                    )
+                    .value
+                    .trim()
+                    .toLowerCase();
+
+            const opportunity =
+                document
+                    .getElementById(
+                        "filter-performance-opportunity"
+                    )
+                    .value;
+
+            const rows = [
+                ...table.querySelectorAll(
+                    "tbody tr"
+                )
+            ];
+
+            const topValues = rows
+                .map(
+                    row =>
+                        Number(
+                            row.dataset.impressions
+                        )
+                )
+                .sort(
+                    (a, b) => b - a
+                );
+
+            const threshold =
+                topValues[
+                    Math.min(
+                        9,
+                        topValues.length - 1
+                    )
+                ] || 0;
+
+            let visible = 0;
 
             rows.forEach(row => {
-                const searchText = row.dataset.search || "";
-                const rowSeverity = row.dataset.severity || "";
-                const rowIssueType = row.dataset.issueType || "";
+                let opportunityMatch = true;
 
-                const searchMatch = !search || searchText.includes(search);
-                const severityMatch = !severity || rowSeverity === severity;
-                const issueTypeMatch = !issueType || rowIssueType === issueType;
-                const show = searchMatch && severityMatch && issueTypeMatch;
+                if (opportunity === "top") {
+                    opportunityMatch =
+                        Number(
+                            row.dataset.impressions
+                        ) >= threshold;
+                }
+
+                if (
+                    opportunity === "position"
+                ) {
+                    opportunityMatch =
+                        row.dataset.position === "true";
+                }
+
+                if (opportunity === "drop") {
+                    opportunityMatch =
+                        row.dataset.drop === "true";
+                }
+
+                if (
+                    opportunity === "zero-clicks"
+                ) {
+                    opportunityMatch =
+                        row.dataset.zero === "true";
+                }
+
+                const show =
+                    (
+                        !search ||
+                        row.dataset.search
+                            .includes(search)
+                    ) &&
+                    opportunityMatch;
 
                 row.hidden = !show;
 
                 if (show) {
-                    visibleCount += 1;
+                    visible += 1;
                 }
             });
 
-            setText("visible-issues-count", `${visibleCount} ${visibleCount === 1 ? "issue" : "issues"}`);
+            setText(
+                "gsc-page-count",
+                `${visible} pages`
+            );
         }
 
-        function openPageDetails(page) {
+        function openDrawer(page) {
             if (!page) {
                 return;
             }
 
-            const backdrop = document.getElementById("page-details-backdrop");
-            const body = document.getElementById("drawer-body");
-            const pageIssues = issuesData.filter(issue => {
-                return normalizeUrlForComparison(issue.url) === normalizeUrlForComparison(page.url);
-            });
+            const relatedIssues =
+                issues.filter(
+                    issue =>
+                        normalizeUrl(issue.url) ===
+                        normalizeUrl(page.url)
+                );
 
-            setText("drawer-url", page.url);
+            setText(
+                "drawer-url",
+                page.url
+            );
 
-            const details = [
+            const detailRows = [
                 ["Source", page.source],
                 ["HTTP Status", page.status_code],
                 ["SEO Score", page.seo_score],
-                ["Priority", capitalize(page.priority)],
+                [
+                    "Priority",
+                    capitalize(page.priority)
+                ],
                 ["H1 Count", page.h1_count],
                 ["H2 Count", page.h2_count],
                 ["Word Count", page.word_count],
-                ["Internal Links", page.internal_links_count],
-                ["External Links", page.external_links_count],
+                [
+                    "Internal Links",
+                    page.internal_links_count
+                ],
+                [
+                    "External Links",
+                    page.external_links_count
+                ],
                 ["Images", page.image_count],
-                ["Missing Alt", page.missing_alt_count],
-                ["Index Status", page.is_noindex ? "Noindex" : "Indexable"],
-                ["Canonical Status", capitalize(getCanonicalState(page))],
-                ["Issue Count", pageIssues.length || page.issue_count || 0],
-                ["Crawl Error", page.crawl_error || "None"],
-                ["Crawl Timestamp", page.crawl_timestamp || "Not recorded"]
+                [
+                    "Missing Alt",
+                    page.missing_alt_count
+                ],
+                [
+                    "Index Status",
+                    page.is_noindex
+                        ? "Noindex"
+                        : "Indexable"
+                ],
+                [
+                    "Canonical Status",
+                    capitalize(
+                        canonicalState(page)
+                    )
+                ],
+                [
+                    "Issue Count",
+                    relatedIssues.length ||
+                    page.issue_count
+                ],
+                [
+                    "Crawl Error",
+                    page.crawl_error ||
+                    "None"
+                ],
+                [
+                    "Crawl Timestamp",
+                    page.crawl_timestamp ||
+                    "Not recorded"
+                ]
             ];
 
-            const detailHtml = details.map(([label, value]) => `
-                <div class="detail-item">
-                    <div class="detail-label">${escapeHtml(label)}</div>
-                    <div class="detail-value">${escapeHtml(displayCount(value))}</div>
-                </div>
-            `).join("");
+            document
+                .getElementById("drawer-body")
+                .innerHTML = `
+                    <div class="detail-grid">
+                        ${
+                            detailRows
+                                .map(
+                                    ([label, value]) => `
+                                        <div class="detail-item">
+                                            <div class="detail-label">
+                                                ${esc(label)}
+                                            </div>
 
-            const issueHtml = pageIssues.length
-                ? pageIssues.map(issue => `
-                    <div class="detail-text" style="margin-bottom:8px">
-                        <strong>${escapeHtml(capitalize(issue.severity))}: ${escapeHtml(issue.issue)}</strong>
-                        <div style="margin-top:6px">${escapeHtml(issue.action)}</div>
+                                            <div class="detail-value">
+                                                ${
+                                                    esc(
+                                                        display(
+                                                            value
+                                                        )
+                                                    )
+                                                }
+                                            </div>
+                                        </div>
+                                    `
+                                )
+                                .join("")
+                        }
                     </div>
-                `).join("")
-                : '<div class="detail-text">No issue rows found for this URL.</div>';
 
-            body.innerHTML = `
-                <div class="detail-grid">${detailHtml}</div>
+                    ${
+                        detailSection(
+                            "Title",
+                            page.title ||
+                            "Missing"
+                        )
+                    }
 
-                <div class="detail-section">
-                    <div class="detail-section-title">Title</div>
-                    <div class="detail-text">${escapeHtml(page.title || "Missing")}</div>
-                </div>
+                    ${
+                        detailSection(
+                            "Meta Description",
+                            page.meta_description ||
+                            "Missing"
+                        )
+                    }
 
-                <div class="detail-section">
-                    <div class="detail-section-title">Meta Description</div>
-                    <div class="detail-text">${escapeHtml(page.meta_description || "Missing")}</div>
-                </div>
+                    ${
+                        detailSection(
+                            "Canonical URL",
+                            page.canonical_url ||
+                            "Missing"
+                        )
+                    }
 
-                <div class="detail-section">
-                    <div class="detail-section-title">Canonical URL</div>
-                    <div class="detail-text">${escapeHtml(page.canonical_url || "Missing")}</div>
-                </div>
+                    ${
+                        detailSection(
+                            "Robots Directives",
+                            page.robots_directives ||
+                            "Not recorded"
+                        )
+                    }
 
-                <div class="detail-section">
-                    <div class="detail-section-title">Robots Directives</div>
-                    <div class="detail-text">${escapeHtml(page.robots_directives || "Not recorded")}</div>
-                </div>
+                    ${
+                        detailSection(
+                            "Recommended Actions",
+                            page.exact_actions ||
+                            "No page-level action recorded."
+                        )
+                    }
 
-                <div class="detail-section">
-                    <div class="detail-section-title">Recommended Actions</div>
-                    <div class="detail-text">${escapeHtml(page.exact_actions || "No page-level action recorded.")}</div>
-                </div>
+                    <div class="detail-section">
+                        <div class="detail-section-title">
+                            Reported Issues
+                        </div>
 
-                <div class="detail-section">
-                    <div class="detail-section-title">Reported Issues</div>
-                    ${issueHtml}
-                </div>
-            `;
+                        ${
+                            relatedIssues.length
+                                ? relatedIssues
+                                    .map(issue => `
+                                        <div
+                                            class="detail-text"
+                                            style="margin-bottom:8px"
+                                        >
+                                            <strong>
+                                                ${
+                                                    esc(
+                                                        capitalize(
+                                                            issue.severity
+                                                        )
+                                                    )
+                                                }:
+                                                ${
+                                                    esc(
+                                                        issue.issue
+                                                    )
+                                                }
+                                            </strong>
+
+                                            <div style="margin-top:6px">
+                                                ${
+                                                    esc(
+                                                        issue.action
+                                                    )
+                                                }
+                                            </div>
+                                        </div>
+                                    `)
+                                    .join("")
+                                : `
+                                    <div class="detail-text">
+                                        No issue rows found for this URL.
+                                    </div>
+                                `
+                        }
+                    </div>
+                `;
+
+            const backdrop =
+                document.getElementById(
+                    "page-details-backdrop"
+                );
 
             backdrop.classList.add("open");
-            backdrop.setAttribute("aria-hidden", "false");
-            document.body.style.overflow = "hidden";
-        }
 
-        function closePageDetails() {
-            const backdrop = document.getElementById("page-details-backdrop");
-            backdrop.classList.remove("open");
-            backdrop.setAttribute("aria-hidden", "true");
-            document.body.style.overflow = "";
-        }
-
-        function matchStatusFilter(status, filter) {
-            if (!filter) {
-                return true;
-            }
-
-            const numericStatus = Number.parseInt(status, 10);
-
-            if (filter === "error") {
-                return !Number.isFinite(numericStatus);
-            }
-
-            if (filter === "3xx") {
-                return numericStatus >= 300 && numericStatus < 400;
-            }
-
-            if (filter === "4xx") {
-                return numericStatus >= 400 && numericStatus < 500;
-            }
-
-            if (filter === "5xx") {
-                return numericStatus >= 500 && numericStatus < 600;
-            }
-
-            return String(numericStatus) === filter;
-        }
-
-        function matchScoreFilter(score, filter) {
-            if (!filter) {
-                return true;
-            }
-
-            if (filter === "good") {
-                return score >= 80;
-            }
-
-            if (filter === "average") {
-                return score >= 50 && score < 80;
-            }
-
-            if (filter === "bad") {
-                return score < 50;
-            }
-
-            return true;
-        }
-
-        function renderLastUpdated() {
-            const label = getLastCrawlLabel();
-            const displayLabel = label === "Not recorded" ? "Last updated: Not recorded" : `Last crawl: ${label}`;
-
-            [
-                "last-updated-overview",
-                "last-updated-pages",
-                "last-updated-issues",
-                "last-updated-changes",
-                "last-updated-system"
-            ].forEach(id => setText(id, displayLabel));
-        }
-
-        function getLastCrawlLabel() {
-            const possibleTimestamp = firstValue(
-                auditMetadata.generated_at,
-                auditMetadata.crawl_timestamp,
-                auditMetadata.last_updated,
-                auditMetadata.updated_at,
-                auditMetadata.crawl_date,
-                pagesData[0]?.crawl_timestamp
+            backdrop.setAttribute(
+                "aria-hidden",
+                "false"
             );
 
-            if (!possibleTimestamp) {
-                return "Not recorded";
-            }
-
-            const parsed = new Date(possibleTimestamp);
-
-            return Number.isNaN(parsed.getTime())
-                ? String(possibleTimestamp)
-                : parsed.toLocaleString();
+            document.body.style.overflow =
+                "hidden";
         }
 
-        function getCanonicalState(page) {
-            const canonical = normalizeUrlForComparison(page.canonical_url);
-            const target = normalizeUrlForComparison(page.final_url || page.url);
+        function closeDrawer() {
+            const backdrop =
+                document.getElementById(
+                    "page-details-backdrop"
+                );
+
+            backdrop.classList.remove("open");
+
+            backdrop.setAttribute(
+                "aria-hidden",
+                "true"
+            );
+
+            document.body.style.overflow =
+                "";
+        }
+
+        function performanceAction(row) {
+            if (
+                row.current_impressions >= 20 &&
+                row.current_clicks === 0
+            ) {
+                return "Improve the title and meta description to increase CTR.";
+            }
+
+            if (
+                row.current_position >= 8 &&
+                row.current_position <= 20
+            ) {
+                return "Refresh the content and add relevant internal links to move into the top results.";
+            }
+
+            if (
+                row.impressions_change <= -5
+            ) {
+                return "Review ranking and content changes because impressions declined.";
+            }
+
+            if (
+                row.current_position > 20 &&
+                row.current_impressions > 0
+            ) {
+                return "Expand the content and improve topical relevance.";
+            }
+
+            return "Monitor performance; no urgent Search Console action detected.";
+        }
+
+        function canonicalState(page) {
+            const canonical =
+                normalizeUrl(
+                    page.canonical_url
+                );
+
+            const target =
+                normalizeUrl(
+                    page.final_url ||
+                    page.url
+                );
 
             if (!canonical) {
                 return "missing";
             }
 
-            return canonical === target ? "ok" : "different";
+            return canonical === target
+                ? "ok"
+                : "different";
         }
 
         function isErrorPage(page) {
-            const status = Number.parseInt(page.status_code, 10);
-            return Boolean(page.crawl_error) || !Number.isFinite(status) || status >= 400;
+            const status =
+                Number.parseInt(
+                    page.status_code,
+                    10
+                );
+
+            return (
+                Boolean(page.crawl_error) ||
+                !Number.isFinite(status) ||
+                status >= 400
+            );
+        }
+
+        function statusMatches(
+            value,
+            filter
+        ) {
+            if (!filter) {
+                return true;
+            }
+
+            const status =
+                Number.parseInt(
+                    value,
+                    10
+                );
+
+            if (filter === "error") {
+                return !Number.isFinite(status);
+            }
+
+            if (filter === "3xx") {
+                return (
+                    status >= 300 &&
+                    status < 400
+                );
+            }
+
+            if (filter === "4xx") {
+                return (
+                    status >= 400 &&
+                    status < 500
+                );
+            }
+
+            if (filter === "5xx") {
+                return (
+                    status >= 500 &&
+                    status < 600
+                );
+            }
+
+            return String(status) === filter;
+        }
+
+        function scoreMatches(
+            value,
+            filter
+        ) {
+            if (!filter) {
+                return true;
+            }
+
+            if (filter === "good") {
+                return value >= 80;
+            }
+
+            if (filter === "average") {
+                return (
+                    value >= 50 &&
+                    value < 80
+                );
+            }
+
+            if (filter === "bad") {
+                return value < 50;
+            }
+
+            return true;
+        }
+
+        function lastCrawl() {
+            const value = first(
+                auditMeta.generated_at,
+                auditMeta.crawl_timestamp,
+                auditMeta.last_updated,
+                auditMeta.updated_at,
+                auditMeta.crawl_date,
+                pages[0]?.crawl_timestamp
+            );
+
+            if (!value) {
+                return "Not recorded";
+            }
+
+            const parsed = new Date(value);
+
+            return Number.isNaN(
+                parsed.getTime()
+            )
+                ? String(value)
+                : parsed.toLocaleString();
         }
 
         function normalizePriority(value) {
-            const normalized = String(value || "").trim().toLowerCase();
+            const text =
+                stringValue(value)
+                    .toLowerCase();
 
-            if (normalized.includes("critical")) {
+            if (text.includes("critical")) {
                 return "critical";
             }
 
-            if (normalized.includes("high")) {
+            if (text.includes("high")) {
                 return "high";
             }
 
-            if (normalized.includes("medium")) {
+            if (text.includes("medium")) {
                 return "medium";
             }
 
             return "low";
         }
 
-        function normalizeBoolean(value) {
-            if (typeof value === "boolean") {
-                return value;
-            }
-
-            const normalized = String(value || "").trim().toLowerCase();
-            return ["true", "1", "yes", "y"].includes(normalized);
-        }
-
         function normalizeStatus(value) {
-            const text = String(value ?? "").trim();
-            const match = text.match(/\b[1-5]\d{2}\b/);
+            const text =
+                stringValue(value);
 
-            return match ? match[0] : (text || "Error");
+            const match =
+                text.match(
+                    /\b[1-5]\d{2}\b/
+                );
+
+            return match
+                ? match[0]
+                : (
+                    text ||
+                    "Error"
+                );
         }
 
-        function normalizeNumber(value, fallback = 0) {
-            const number = Number.parseFloat(String(value ?? "").replace(",", "."));
-            return Number.isFinite(number) ? number : fallback;
-        }
-
-        function normalizeCount(value) {
-            if (Array.isArray(value)) {
-                return value.length;
-            }
-
-            if (value === null || value === undefined || value === "") {
-                return 0;
-            }
-
-            const number = Number.parseInt(String(value), 10);
-            return Number.isFinite(number) ? number : String(value);
-        }
-
-        function normalizeUrlForComparison(value) {
-            const raw = String(value || "").trim();
+        function normalizeUrl(value) {
+            const raw =
+                stringValue(value);
 
             if (!raw) {
                 return "";
             }
 
             try {
-                const parsed = new URL(raw);
-                const path = parsed.pathname === "/" ? "/" : parsed.pathname.replace(/\/+$/, "");
-                return `${parsed.protocol}//${parsed.host.toLowerCase()}${path}${parsed.search}`;
-            } catch (error) {
-                return raw.toLowerCase().replace(/\/+$/, "");
+                const parsed =
+                    new URL(raw);
+
+                const path =
+                    parsed.pathname === "/"
+                        ? "/"
+                        : parsed.pathname
+                            .replace(
+                                /\/+$/,
+                                ""
+                            );
+
+                return (
+                    `${parsed.protocol}//` +
+                    `${parsed.host.toLowerCase()}` +
+                    `${path}` +
+                    `${parsed.search}`
+                );
+
+            } catch {
+                return raw
+                    .toLowerCase()
+                    .replace(
+                        /\/+$/,
+                        ""
+                    );
             }
         }
 
-        function firstArray(...values) {
-            return values.find(value => Array.isArray(value)) || [];
-        }
+        function comparison(
+            current,
+            previous,
+            label
+        ) {
+            const before =
+                numberValue(previous);
 
-        function firstValue(...values) {
-            return values.find(value => {
-                return value !== undefined
-                    && value !== null
-                    && String(value).trim() !== "";
-            });
-        }
+            const change =
+                numberValue(current) -
+                before;
 
-        function clampNumber(value, minimum, maximum) {
-            const number = Number(value);
-            const safe = Number.isFinite(number) ? number : minimum;
-            return Math.min(maximum, Math.max(minimum, Math.round(safe)));
-        }
-
-        function safeNumber(value) {
-            const number = Number(value);
-            return Number.isFinite(number) ? number : 0;
-        }
-
-        function displayCount(value) {
-            return value === null || value === undefined || value === ""
-                ? "—"
-                : String(value);
-        }
-
-        function shortenUrl(url) {
-            const value = String(url || "—");
-
-            return value.length > 58
-                ? `${value.slice(0, 25)}…${value.slice(-30)}`
-                : value;
-        }
-
-        function shortenText(text, maxLength) {
-            const value = String(text || "—");
-
-            return value.length > maxLength
-                ? `${value.slice(0, maxLength - 1)}…`
-                : value;
-        }
-
-        function capitalize(value) {
-            const text = String(value || "");
-            return text ? text.charAt(0).toUpperCase() + text.slice(1) : "";
+            return (
+                `Previous period: ` +
+                `${whole(before)} ` +
+                `${label}; change ` +
+                `${signed(change)}`
+            );
         }
 
         function statusBadge(status) {
-            const numeric = Number.parseInt(status, 10);
-            let className = "status-error";
+            const value =
+                Number.parseInt(
+                    status,
+                    10
+                );
 
-            if (numeric >= 200 && numeric < 300) {
-                className = "status-ok";
-            } else if (numeric >= 300 && numeric < 400) {
-                className = "status-warning";
-            }
+            const className =
+                value >= 200 &&
+                value < 300
+                    ? "status-ok"
+                    : value >= 300 &&
+                        value < 400
+                        ? "status-warning"
+                        : "status-error";
 
-            return `<span class="status ${className}">${escapeHtml(status)}</span>`;
+            return `
+                <span class="status ${className}">
+                    ${esc(status)}
+                </span>
+            `;
         }
 
-        function emptyState(title, message) {
+        function badge(text, type) {
+            const allowed = [
+                "critical",
+                "high",
+                "medium",
+                "low",
+                "ok"
+            ];
+
+            const badgeType =
+                allowed.includes(type)
+                    ? type
+                    : "neutral";
+
+            return `
+                <span class="badge badge-${badgeType}">
+                    ${esc(text)}
+                </span>
+            `;
+        }
+
+        function detailSection(
+            title,
+            text
+        ) {
+            return `
+                <div class="detail-section">
+                    <div class="detail-section-title">
+                        ${esc(title)}
+                    </div>
+
+                    <div class="detail-text">
+                        ${esc(text)}
+                    </div>
+                </div>
+            `;
+        }
+
+        function emptyState(
+            title,
+            message
+        ) {
             return `
                 <div class="empty">
-                    <strong>${escapeHtml(title)}</strong>
-                    <div style="margin-top:6px">${escapeHtml(message)}</div>
+                    <strong>
+                        ${esc(title)}
+                    </strong>
+
+                    <div style="margin-top:6px">
+                        ${esc(message)}
+                    </div>
                 </div>
             `;
         }
 
         function showFatalError(error) {
-            const message = error instanceof Error ? error.message : String(error);
+            const message =
+                error instanceof Error
+                    ? error.message
+                    : String(error);
 
-            document.getElementById("pages-table-container").innerHTML = `
-                <div class="error">
-                    <strong>Dashboard data could not be loaded.</strong>
-                    <div style="margin-top:6px">${escapeHtml(message)}</div>
-                </div>
-            `;
+            [
+                "pages-table-container",
+                "issues-container",
+                "performance-table-container",
+                "changelog-container"
+            ].forEach(id => {
+                const element =
+                    document.getElementById(id);
 
-            document.getElementById("issues-container").innerHTML = emptyState(
-                "Issue report is unavailable.",
-                "Check data/issues.csv and refresh the page."
+                if (element) {
+                    element.innerHTML = `
+                        <div class="error">
+                            <strong>
+                                Dashboard data could not be loaded.
+                            </strong>
+
+                            <div style="margin-top:6px">
+                                ${esc(message)}
+                            </div>
+                        </div>
+                    `;
+                }
+            });
+        }
+
+        function firstArray(...values) {
+            return (
+                values.find(
+                    Array.isArray
+                ) ||
+                []
             );
+        }
 
-            document.getElementById("changelog-container").innerHTML = emptyState(
-                "Change log is unavailable.",
-                "Check data/change_log.csv and refresh the page."
+        function first(...values) {
+            return values.find(
+                value =>
+                    value !== undefined &&
+                    value !== null &&
+                    String(value).trim() !== ""
             );
+        }
+
+        function stringValue(value) {
+            return String(
+                value ?? ""
+            ).trim();
+        }
+
+        function numberValue(value) {
+            const number =
+                Number.parseFloat(
+                    String(
+                        value ?? 0
+                    ).replace(
+                        ",",
+                        "."
+                    )
+                );
+
+            return Number.isFinite(number)
+                ? number
+                : 0;
+        }
+
+        function countValue(value) {
+            if (Array.isArray(value)) {
+                return value.length;
+            }
+
+            if (
+                value === null ||
+                value === undefined ||
+                value === ""
+            ) {
+                return 0;
+            }
+
+            const number =
+                Number.parseInt(
+                    String(value),
+                    10
+                );
+
+            return Number.isFinite(number)
+                ? number
+                : String(value);
+        }
+
+        function boolValue(value) {
+            if (
+                typeof value === "boolean"
+            ) {
+                return value;
+            }
+
+            return [
+                "true",
+                "1",
+                "yes",
+                "y"
+            ].includes(
+                stringValue(value)
+                    .toLowerCase()
+            );
+        }
+
+        function whole(value) {
+            return Math.round(
+                numberValue(value)
+            ).toLocaleString();
+        }
+
+        function decimal(value) {
+            return numberValue(value)
+                .toFixed(2)
+                .replace(
+                    /\.00$/,
+                    ""
+                );
+        }
+
+        function signed(value) {
+            const number =
+                numberValue(value);
+
+            const formatted =
+                Number.isInteger(number)
+                    ? String(number)
+                    : number.toFixed(2);
+
+            return number > 0
+                ? `+${formatted}`
+                : formatted;
+        }
+
+        function changeClass(value) {
+            const number =
+                numberValue(value);
+
+            return number > 0
+                ? "positive"
+                : number < 0
+                    ? "negative"
+                    : "neutral";
+        }
+
+        function display(value) {
+            return (
+                value === null ||
+                value === undefined ||
+                value === ""
+            )
+                ? "—"
+                : String(value);
+        }
+
+        function shortUrl(value) {
+            const text =
+                stringValue(value) ||
+                "—";
+
+            return text.length > 58
+                ? (
+                    `${text.slice(0, 25)}` +
+                    `…` +
+                    `${text.slice(-30)}`
+                )
+                : text;
+        }
+
+        function shortText(
+            value,
+            limit
+        ) {
+            const text =
+                stringValue(value) ||
+                "—";
+
+            return text.length > limit
+                ? (
+                    `${text.slice(
+                        0,
+                        limit - 1
+                    )}…`
+                )
+                : text;
+        }
+
+        function capitalize(value) {
+            const text =
+                stringValue(value);
+
+            return text
+                ? (
+                    text
+                        .charAt(0)
+                        .toUpperCase() +
+                    text.slice(1)
+                )
+                : "";
         }
 
         function setText(id, value) {
-            const element = document.getElementById(id);
+            const element =
+                document.getElementById(id);
 
             if (element) {
-                element.textContent = String(value);
+                element.textContent =
+                    String(value);
             }
         }
 
-        function escapeHtml(value) {
-            return String(value ?? "")
-                .replaceAll("&", "&amp;")
-                .replaceAll("<", "&lt;")
-                .replaceAll(">", "&gt;")
-                .replaceAll('"', "&quot;")
-                .replaceAll("'", "&#039;");
+        function esc(value) {
+            return String(
+                value ?? ""
+            )
+                .replaceAll(
+                    "&",
+                    "&amp;"
+                )
+                .replaceAll(
+                    "<",
+                    "&lt;"
+                )
+                .replaceAll(
+                    ">",
+                    "&gt;"
+                )
+                .replaceAll(
+                    '"',
+                    "&quot;"
+                )
+                .replaceAll(
+                    "'",
+                    "&#039;"
+                );
         }
 
-        function escapeAttribute(value) {
-            return escapeHtml(value);
+        function attr(value) {
+            return esc(value);
         }
     </script>
 </body>
