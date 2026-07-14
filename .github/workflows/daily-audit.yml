@@ -54,6 +54,13 @@ jobs:
           URL_INSPECTION_LIMIT: "20"
         run: python crawler/url_inspection.py
 
+      - name: Run mobile and desktop PageSpeed tests
+        env:
+          PAGESPEED_API_KEY: ${{ secrets.PAGESPEED_API_KEY }}
+          GSC_SITE_URL: https://engineerwala.com/
+          PAGESPEED_URL_LIMIT: "5"
+        run: python crawler/pagespeed.py
+
       - name: Verify required reports
         run: |
           test -s data/urls.csv
@@ -66,6 +73,8 @@ jobs:
           test -s data/search_console_summary.json
           test -s data/url_inspection.csv
           test -s data/url_inspection_summary.json
+          test -s data/pagespeed_results.csv
+          test -s data/pagespeed_summary.json
 
       - name: Commit updated reports
         run: |
