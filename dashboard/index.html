@@ -1,10 +1,259 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
-  <meta charset="UTF-8">
-  <title>EngineerWala SEO Dashboard</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>EngineerWala SEO Dashboard</title>
+
+    <style>
+
+        *{
+            margin:0;
+            padding:0;
+            box-sizing:border-box;
+            font-family:Arial,sans-serif;
+        }
+
+        body{
+            background:#f5f7fb;
+            color:#222;
+        }
+
+        header{
+            background:#0b5ed7;
+            color:white;
+            padding:25px;
+            text-align:center;
+        }
+
+        header h1{
+            font-size:32px;
+        }
+
+        .container{
+            width:95%;
+            max-width:1400px;
+            margin:30px auto;
+        }
+
+        .cards{
+
+            display:grid;
+
+            grid-template-columns:
+            repeat(auto-fit,minmax(220px,1fr));
+
+            gap:20px;
+
+        }
+
+        .card{
+
+            background:white;
+
+            border-radius:12px;
+
+            padding:20px;
+
+            box-shadow:0 2px 10px rgba(0,0,0,.08);
+
+        }
+
+        .card h2{
+
+            font-size:16px;
+
+            color:#666;
+
+            margin-bottom:15px;
+
+        }
+
+        .value{
+
+            font-size:34px;
+
+            font-weight:bold;
+
+            color:#0b5ed7;
+
+        }
+
+        .section{
+
+            margin-top:35px;
+
+            background:white;
+
+            padding:20px;
+
+            border-radius:12px;
+
+            box-shadow:0 2px 10px rgba(0,0,0,.08);
+
+        }
+
+        .section h2{
+
+            margin-bottom:15px;
+
+        }
+
+        table{
+
+            width:100%;
+
+            border-collapse:collapse;
+
+        }
+
+        table th{
+
+            background:#0b5ed7;
+
+            color:white;
+
+            padding:12px;
+
+            text-align:left;
+
+        }
+
+        table td{
+
+            border-bottom:1px solid #eee;
+
+            padding:12px;
+
+        }
+
+        footer{
+
+            text-align:center;
+
+            padding:30px;
+
+            color:#777;
+
+        }
+
+    </style>
+
 </head>
+
 <body>
-  <h1>EngineerWala SEO Dashboard</h1>
+
+<header>
+
+<h1>EngineerWala SEO Dashboard</h1>
+
+<p>Website SEO Monitoring System</p>
+
+</header>
+
+<div class="container">
+
+<div class="cards">
+
+<div class="card">
+<h2>Total URLs</h2>
+<div class="value">--</div>
+</div>
+
+<div class="card">
+<h2>SEO Score</h2>
+<div class="value">--</div>
+</div>
+
+<div class="card">
+<h2>Critical Issues</h2>
+<div class="value">--</div>
+</div>
+
+<div class="card">
+<h2>Last Crawl</h2>
+<div class="value">--</div>
+</div>
+
+</div>
+
+
+<div class="section">
+
+<h2>Latest Crawl Summary</h2>
+
+<table>
+
+<tr>
+
+<th>Metric</th>
+
+<th>Value</th>
+
+</tr>
+
+<tr>
+
+<td>Total Pages</td>
+
+<td>--</td>
+
+</tr>
+
+<tr>
+
+<td>404 Pages</td>
+
+<td>--</td>
+
+</tr>
+
+<tr>
+
+<td>High Issues</td>
+
+<td>--</td>
+
+</tr>
+
+<tr>
+
+<td>Medium Issues</td>
+
+<td>--</td>
+
+</tr>
+
+<tr>
+
+<td>Low Issues</td>
+
+<td>--</td>
+
+</tr>
+
+</table>
+
+</div>
+
+<div class="section">
+
+<h2>Recent Changes</h2>
+
+<p>No data loaded yet.</p>
+
+</div>
+
+</div>
+
+<footer>
+
+EngineerWala SEO Tracker
+
+</footer>
+
 </body>
+
 </html>
