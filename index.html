@@ -336,9 +336,9 @@
                 const url = p.url || '';
                 const shortUrl = url.length > 50 ? '...' + url.slice(-47) : url;
                 const title = (p.title || '').substring(0, 40) + ((p.title || '').length > 40 ? '...' : '');
-                const h1 = (p.h1_text || '').substring(0, 30) + ((p.h1_text || '').length > 30 ? '...' : '');
+                const h1 = p.h1_count ?? '-';
                 const words = p.word_count || '-';
-                const links = p.internal_links || '-';
+                const links = p.internal_links_count ?? '-';
                 
                 const urlIssues = issuesData.filter(i => i.url === url);
                 const issueBadges = urlIssues.slice(0, 3).map(i => {
