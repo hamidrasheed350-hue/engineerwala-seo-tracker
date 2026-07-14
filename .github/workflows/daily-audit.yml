@@ -19,10 +19,10 @@ jobs:
 
     steps:
       - name: Download repository
-        uses: actions/checkout@v6
+        uses: actions/checkout@v4
 
       - name: Set up Python
-        uses: actions/setup-python@v6
+        uses: actions/setup-python@v5
         with:
           python-version: "3.13"
           cache: "pip"
@@ -41,6 +41,12 @@ jobs:
       - name: Compare current and previous crawl
         run: python crawler/change_tracker.py
 
+      - name: Fetch Google Search Console data
+        env:
+          GSC_SERVICE_ACCOUNT_JSON: ${{ secrets.GSC_SERVICE_ACCOUNT_JSON }}
+          GSC_SITE_URL: https://engineerwala.com/
+        run: python crawler/search_console.py
+
       - name: Verify required reports
         run: |
           test -s data/urls.csv
@@ -49,6 +55,8 @@ jobs:
           test -s data/latest_audit.json
           test -s data/issues.csv
           test -s data/change_log.csv
+          test -s data/search_console_pages.csv
+          test -s data/search_console_summary.json
 
       - name: Commit updated reports
         run: |
