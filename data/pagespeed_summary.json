@@ -1,0 +1,21 @@
+{
+  "generated_at": "2026-07-14T20:11:51Z",
+  "site_url": "https://engineerwala.com/",
+  "url_limit": 5,
+  "selected_urls": 5,
+  "total_tests": 10,
+  "successful_tests": 10,
+  "failed_tests": 0,
+  "mobile": {
+    "average_performance_score": 99,
+    "average_accessibility_score": 96,
+    "average_best_practices_score": 100,
+    "average_seo_score": 100
+  },
+  "desktop": {
+    "average_performance_score": 100,
+    "average_accessibility_score": 95,
+    "average_best_practices_score": 100,
+    "average_seo_score": 100
+  }
+}
