@@ -221,11 +221,11 @@
                 try {
                     const resp = await fetch('data/latest_audit.json');
                     if (resp.ok) {
-    const auditData = await resp.json();
-    pages = Array.isArray(auditData)
-        ? auditData
-        : (auditData.pages || []);
-}
+                        const auditData = await resp.json();
+                        pages = Array.isArray(auditData)
+                            ? auditData
+                            : (auditData.pages || []);
+                    }
                 } catch(e) { console.log('JSON load failed, trying CSV'); }
 
                 if (pages.length === 0) {
@@ -276,17 +276,68 @@
         }
 
         function parseCSV(csv) {
-            const lines = csv.trim().split('\n');
-            if (lines.length < 2) return [];
-            const headers = lines[0].split(',').map(h => h.trim().replace(/^"|"$/g, ''));
-            const result = [];
-            for (let i = 1; i < lines.length; i++) {
-                const values = lines[i].split(',').map(v => v.trim().replace(/^"|"$/g, ''));
-                const obj = {};
-                headers.forEach((h, idx) => obj[h] = values[idx] || '');
-                result.push(obj);
+            const rows = [];
+            let row = [];
+            let value = '';
+            let inQuotes = false;
+
+            for (let i = 0; i < csv.length; i++) {
+                const char = csv[i];
+                const nextChar = csv[i + 1];
+
+                if (char === '"' && inQuotes && nextChar === '"') {
+                    value += '"';
+                    i++;
+                } else if (char === '"') {
+                    inQuotes = !inQuotes;
+                } else if (char === ',' && !inQuotes) {
+                    row.push(value);
+                    value = '';
+                } else if ((char === '
+' || char === '
+') && !inQuotes) {
+                    if (char === '
+' && nextChar === '
+') {
+                        i++;
+                    }
+
+                    row.push(value);
+
+                    if (row.some(cell => cell.trim() !== '')) {
+                        rows.push(row);
+                    }
+
+                    row = [];
+                    value = '';
+                } else {
+                    value += char;
+                }
             }
-            return result;
+
+            if (value.length > 0 || row.length > 0) {
+                row.push(value);
+
+                if (row.some(cell => cell.trim() !== '')) {
+                    rows.push(row);
+                }
+            }
+
+            if (rows.length < 2) {
+                return [];
+            }
+
+            const headers = rows[0].map(header => header.trim());
+
+            return rows.slice(1).map(values => {
+                const item = {};
+
+                headers.forEach((header, index) => {
+                    item[header] = (values[index] || '').trim();
+                });
+
+                return item;
+            });
         }
 
         function renderOverview(pages, issues) {
