@@ -1,21 +1,28 @@
 {
-  "generated_at": "2026-07-15T06:29:56Z",
+  "generated_at": "2026-07-15T07:11:03Z",
   "site_url": "https://engineerwala.com/",
+  "run_status": "healthy",
+  "api_key_configured": true,
   "url_limit": 5,
   "selected_urls": 5,
   "total_tests": 10,
   "successful_tests": 10,
   "failed_tests": 0,
+  "inp_available_tests": 0,
+  "inp_unavailable_tests": 10,
   "mobile": {
-    "average_performance_score": 100,
+    "average_performance_score": 99,
     "average_accessibility_score": 96,
     "average_best_practices_score": 100,
-    "average_seo_score": 100
+    "average_seo_score": 100,
+    "average_inp_ms": 0
   },
   "desktop": {
     "average_performance_score": 100,
     "average_accessibility_score": 95,
     "average_best_practices_score": 100,
-    "average_seo_score": 100
-  }
+    "average_seo_score": 100,
+    "average_inp_ms": 0
+  },
+  "errors": []
 }

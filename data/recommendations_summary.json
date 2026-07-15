@@ -1,10 +1,10 @@
 {
-  "generated_at": "2026-07-15T06:29:56Z",
-  "total_recommendations": 246,
+  "generated_at": "2026-07-15T07:11:03Z",
+  "total_recommendations": 247,
   "affected_urls": 76,
   "priority_counts": {
     "critical": 0,
-    "high": 22,
+    "high": 23,
     "medium": 197,
     "low": 27
   },
@@ -13,7 +13,8 @@
     "Images": 65,
     "SEO": 26,
     "Indexing": 5,
-    "Search Performance": 5
+    "Search Performance": 5,
+    "Core Web Vitals": 1
   },
   "source_files": {
     "seo_issues": "data/issues.csv",
