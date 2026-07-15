@@ -67,6 +67,9 @@ jobs:
       - name: Generate meaningful SEO alerts
         run: python crawler/alerts.py
 
+      - name: Test HTTP 404 detection
+        run: python crawler/test_404_detection.py
+
       - name: Verify required reports
         run: |
           test -s data/urls.csv
@@ -86,6 +89,7 @@ jobs:
           test -s data/alerts_current.csv
           test -s data/alerts_log.csv
           test -s data/alerts_summary.json
+          test -s data/404_detection_test.json
 
       - name: Commit updated reports
         run: |
