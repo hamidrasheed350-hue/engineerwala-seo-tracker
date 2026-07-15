@@ -1,0 +1,27 @@
+{
+  "generated_at": "2026-07-15T07:50:48Z",
+  "delivery_method": "dashboard_only",
+  "email_notifications_enabled": false,
+  "current_alerts": 0,
+  "new_alerts_this_run": 0,
+  "resolved_alerts": 0,
+  "priority_counts": {
+    "critical": 0,
+    "high": 0,
+    "medium": 0,
+    "low": 0
+  },
+  "alert_type_counts": {},
+  "meaningful_alert_rules": [
+    "critical SEO issue",
+    "HTTP 404",
+    "HTTP 5xx server error",
+    "noindex page present in sitemap",
+    "major search clicks drop",
+    "major search impressions drop"
+  ],
+  "reports": {
+    "current_alerts": "data/alerts_current.csv",
+    "alerts_log": "data/alerts_log.csv"
+  }
+}
