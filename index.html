@@ -6319,5 +6319,638 @@ function escapeAttribute(value) {
     return escapeHtml(value);
 }
 </script>
+    <script>
+"use strict";
+
+(() => {
+    document.addEventListener("DOMContentLoaded", async () => {
+        addAlertsCss();
+        addAlertsNav();
+        addAlertsPage();
+        addAlertsSystemRows();
+
+        try {
+            const [summary, rows] = await Promise.all([
+                loadJson("data/alerts_summary.json"),
+                loadCsv("data/alerts_current.csv")
+            ]);
+
+            renderAlerts(
+                summary || {},
+                rows || []
+            );
+        } catch (error) {
+            console.error(error);
+
+            document.getElementById(
+                "alerts-table-container"
+            ).innerHTML = `
+                <div class="alerts-empty">
+                    Alerts data could not be loaded:<br>
+                    ${escapeHtml(error.message)}
+                </div>
+            `;
+        }
+    });
+
+    function addAlertsNav() {
+        const nav = document.querySelector(".nav");
+
+        if (
+            !nav ||
+            nav.querySelector('[data-page="alerts"]')
+        ) {
+            return;
+        }
+
+        const button = document.createElement("button");
+
+        button.className = "nav-button";
+        button.dataset.page = "alerts";
+        button.textContent = "Alerts";
+
+        const changesButton = nav.querySelector(
+            '[data-page="changes"]'
+        );
+
+        if (changesButton) {
+            nav.insertBefore(
+                button,
+                changesButton
+            );
+        } else {
+            nav.appendChild(button);
+        }
+
+        button.addEventListener("click", () => {
+            document
+                .querySelectorAll(".nav-button")
+                .forEach(item => {
+                    item.classList.remove("active");
+                });
+
+            document
+                .querySelectorAll(".page")
+                .forEach(page => {
+                    page.classList.remove("active");
+                });
+
+            button.classList.add("active");
+
+            document
+                .getElementById("page-alerts")
+                ?.classList.add("active");
+        });
+    }
+
+    function addAlertsPage() {
+        if (
+            document.getElementById(
+                "page-alerts"
+            )
+        ) {
+            return;
+        }
+
+        const page = document.createElement(
+            "section"
+        );
+
+        page.className = "page";
+        page.id = "page-alerts";
+
+        page.innerHTML = `
+            <div class="page-header">
+                <div>
+                    <h1 class="page-title">
+                        Meaningful SEO Alerts
+                    </h1>
+
+                    <p class="page-description">
+                        Critical issues, HTTP errors,
+                        noindex conflicts and major
+                        Search Console traffic drops.
+                    </p>
+                </div>
+
+                <div
+                    class="last-updated"
+                    id="last-updated-alerts"
+                >
+                    Last updated: —
+                </div>
+            </div>
+
+            <div class="cards">
+                <article class="card danger">
+                    <div class="card-label">
+                        Current Alerts
+                    </div>
+
+                    <div
+                        class="card-value"
+                        id="alerts-current"
+                    >
+                        —
+                    </div>
+
+                    <div class="card-line"></div>
+
+                    <div class="card-note">
+                        Open meaningful alerts
+                    </div>
+                </article>
+
+                <article class="card warning">
+                    <div class="card-label">
+                        New This Run
+                    </div>
+
+                    <div
+                        class="card-value"
+                        id="alerts-new"
+                    >
+                        —
+                    </div>
+
+                    <div class="card-line"></div>
+
+                    <div class="card-note">
+                        New alerts from latest run
+                    </div>
+                </article>
+
+                <article class="card success">
+                    <div class="card-label">
+                        Resolved Alerts
+                    </div>
+
+                    <div
+                        class="card-value"
+                        id="alerts-resolved"
+                    >
+                        —
+                    </div>
+
+                    <div class="card-line"></div>
+
+                    <div class="card-note">
+                        Previously detected issues fixed
+                    </div>
+                </article>
+
+                <article class="card danger">
+                    <div class="card-label">
+                        Critical Alerts
+                    </div>
+
+                    <div
+                        class="card-value"
+                        id="alerts-critical"
+                    >
+                        —
+                    </div>
+
+                    <div class="card-line"></div>
+
+                    <div class="card-note">
+                        Immediate attention required
+                    </div>
+                </article>
+            </div>
+
+            <div class="panel">
+                <div class="panel-header">
+                    <div>
+                        <div class="panel-title">
+                            Current Alerts
+                        </div>
+
+                        <div class="panel-note">
+                            Only meaningful open alerts
+                            are shown here.
+                        </div>
+                    </div>
+
+                    <div
+                        class="panel-count"
+                        id="alerts-count"
+                    >
+                        0 alerts
+                    </div>
+                </div>
+
+                <div
+                    class="panel-body"
+                    id="alerts-table-container"
+                >
+                    <div class="loading">
+                        Loading alerts...
+                    </div>
+                </div>
+            </div>
+        `;
+
+        const changesPage = document.getElementById(
+            "page-changes"
+        );
+
+        const systemPage = document.getElementById(
+            "page-system"
+        );
+
+        if (changesPage) {
+            changesPage.before(page);
+        } else if (systemPage) {
+            systemPage.before(page);
+        } else {
+            document
+                .querySelector("main.main")
+                ?.appendChild(page);
+        }
+    }
+
+    function addAlertsSystemRows() {
+        const list = document.querySelector(
+            "#page-system .summary-list"
+        );
+
+        if (
+            !list ||
+            document.getElementById(
+                "system-current-alerts"
+            )
+        ) {
+            return;
+        }
+
+        list.insertAdjacentHTML(
+            "beforeend",
+            `
+                <div class="summary-row">
+                    <span class="summary-label">
+                        Current SEO alerts
+                    </span>
+
+                    <span
+                        class="summary-value"
+                        id="system-current-alerts"
+                    >
+                        —
+                    </span>
+                </div>
+
+                <div class="summary-row">
+                    <span class="summary-label">
+                        Alert delivery
+                    </span>
+
+                    <span
+                        class="summary-value"
+                        id="system-alert-delivery"
+                    >
+                        —
+                    </span>
+                </div>
+
+                <div class="summary-row">
+                    <span class="summary-label">
+                        PageSpeed reports
+                    </span>
+
+                    <span class="summary-value">
+                        data/pagespeed_*
+                    </span>
+                </div>
+
+                <div class="summary-row">
+                    <span class="summary-label">
+                        Alerts reports
+                    </span>
+
+                    <span class="summary-value">
+                        data/alerts_*
+                    </span>
+                </div>
+            `
+        );
+    }
+
+    function renderAlerts(
+        summary,
+        rows
+    ) {
+        const priorityCounts =
+            summary.priority_counts || {};
+
+        setText(
+            "alerts-current",
+            summary.current_alerts ??
+            rows.length
+        );
+
+        setText(
+            "alerts-new",
+            summary.new_alerts_this_run ??
+            0
+        );
+
+        setText(
+            "alerts-resolved",
+            summary.resolved_alerts ??
+            0
+        );
+
+        setText(
+            "alerts-critical",
+            priorityCounts.critical ??
+            0
+        );
+
+        setText(
+            "system-current-alerts",
+            summary.current_alerts ??
+            rows.length
+        );
+
+        setText(
+            "system-alert-delivery",
+            summary.delivery_method ===
+            "dashboard_only"
+                ? "Dashboard only"
+                : summary.delivery_method ||
+                  "—"
+        );
+
+        if (summary.generated_at) {
+            setText(
+                "last-updated-alerts",
+                `Updated: ${
+                    formatDate(
+                        summary.generated_at
+                    )
+                }`
+            );
+        }
+
+        setText(
+            "alerts-count",
+            `${rows.length} ${
+                rows.length === 1
+                    ? "alert"
+                    : "alerts"
+            }`
+        );
+
+        const container =
+            document.getElementById(
+                "alerts-table-container"
+            );
+
+        if (!rows.length) {
+            container.innerHTML = `
+                <div class="alerts-healthy">
+                    <strong>
+                        No meaningful SEO alerts
+                        are open.
+                    </strong>
+
+                    <span>
+                        The latest workflow found no
+                        critical SEO issue, HTTP 404,
+                        server error, noindex-in-sitemap
+                        conflict or major traffic drop.
+                    </span>
+                </div>
+            `;
+
+            return;
+        }
+
+        container.innerHTML = `
+            <div class="table-wrap">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Priority</th>
+                            <th>Alert Type</th>
+                            <th>URL</th>
+                            <th>Alert</th>
+                            <th>Recommended Action</th>
+                            <th>Source</th>
+                            <th>Metric</th>
+                            <th>Last Seen</th>
+                        </tr>
+                    </thead>
+
+                    <tbody>
+                        ${
+                            rows.map(row => `
+                                <tr>
+                                    <td>
+                                        <span
+                                            class="
+                                                alert-pill
+                                                alert-${
+                                                    escapeHtml(
+                                                        row.priority ||
+                                                        "medium"
+                                                    )
+                                                }
+                                            "
+                                        >
+                                            ${
+                                                escapeHtml(
+                                                    row.priority ||
+                                                    "medium"
+                                                )
+                                            }
+                                        </span>
+                                    </td>
+
+                                    <td>
+                                        ${
+                                            escapeHtml(
+                                                formatAlertType(
+                                                    row.alert_type
+                                                )
+                                            )
+                                        }
+                                    </td>
+
+                                    <td class="alerts-url">
+                                        ${
+                                            row.url
+                                                ? `
+                                                    <a
+                                                        href="${
+                                                            escapeHtml(
+                                                                row.url
+                                                            )
+                                                        }"
+                                                        target="_blank"
+                                                        rel="noopener noreferrer"
+                                                    >
+                                                        ${
+                                                            escapeHtml(
+                                                                row.url
+                                                            )
+                                                        }
+                                                    </a>
+                                                `
+                                                : "—"
+                                        }
+                                    </td>
+
+                                    <td>
+                                        ${
+                                            escapeHtml(
+                                                row.message ||
+                                                "—"
+                                            )
+                                        }
+                                    </td>
+
+                                    <td class="alerts-action">
+                                        ${
+                                            escapeHtml(
+                                                row.recommended_action ||
+                                                "—"
+                                            )
+                                        }
+                                    </td>
+
+                                    <td>
+                                        ${
+                                            escapeHtml(
+                                                row.source ||
+                                                "—"
+                                            )
+                                        }
+                                    </td>
+
+                                    <td>
+                                        ${
+                                            escapeHtml(
+                                                row.metric ||
+                                                "—"
+                                            )
+                                        }
+                                    </td>
+
+                                    <td>
+                                        ${
+                                            row.last_seen
+                                                ? escapeHtml(
+                                                    formatDate(
+                                                        row.last_seen
+                                                    )
+                                                )
+                                                : "—"
+                                        }
+                                    </td>
+                                </tr>
+                            `).join("")
+                        }
+                    </tbody>
+                </table>
+            </div>
+        `;
+    }
+
+    function formatAlertType(value) {
+        return String(
+            value || ""
+        )
+            .replaceAll(
+                "_",
+                " "
+            )
+            .replace(
+                /\b\w/g,
+                letter =>
+                    letter.toUpperCase()
+            );
+    }
+
+    function addAlertsCss() {
+        const style =
+            document.createElement(
+                "style"
+            );
+
+        style.textContent = `
+            .alerts-healthy {
+                display: grid;
+                gap: 8px;
+                padding: 38px 22px;
+                border:
+                    1px solid
+                    rgba(34, 197, 94, .28);
+                border-radius: 12px;
+                color: #86efac;
+                background:
+                    rgba(34, 197, 94, .08);
+                text-align: center;
+                line-height: 1.6;
+            }
+
+            .alerts-healthy strong {
+                color: var(--text);
+                font-size: 17px;
+            }
+
+            .alert-pill {
+                display: inline-flex;
+                padding: 5px 9px;
+                border-radius: 999px;
+                font-size: 11px;
+                font-weight: 800;
+                text-transform: capitalize;
+            }
+
+            .alert-critical {
+                color: #fecaca;
+                background:
+                    rgba(239, 68, 68, .16);
+            }
+
+            .alert-high {
+                color: #fed7aa;
+                background:
+                    rgba(249, 115, 22, .16);
+            }
+
+            .alert-medium {
+                color: #fde68a;
+                background:
+                    rgba(234, 179, 8, .16);
+            }
+
+            .alert-low {
+                color: #bae6fd;
+                background:
+                    rgba(14, 165, 233, .16);
+            }
+
+            .alerts-url {
+                min-width: 250px;
+                max-width: 360px;
+                word-break: break-word;
+            }
+
+            .alerts-action {
+                min-width: 300px;
+                max-width: 440px;
+                line-height: 1.5;
+            }
+        `;
+
+        document.head.appendChild(
+            style
+        );
+    }
+})();
+</script>
 </body>
 </html>
