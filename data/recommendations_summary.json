@@ -1,10 +1,10 @@
 {
-  "generated_at": "2026-07-15T07:11:03Z",
-  "total_recommendations": 247,
+  "generated_at": "2026-07-15T07:26:45Z",
+  "total_recommendations": 246,
   "affected_urls": 76,
   "priority_counts": {
     "critical": 0,
-    "high": 23,
+    "high": 22,
     "medium": 197,
     "low": 27
   },
@@ -13,10 +13,23 @@
     "Images": 65,
     "SEO": 26,
     "Indexing": 5,
-    "Search Performance": 5,
-    "Core Web Vitals": 1
+    "Search Performance": 5
+  },
+  "source_counts": {
+    "SEO Audit": 236,
+    "Search Console": 5,
+    "URL Inspection": 5
+  },
+  "special_rule_counts": {
+    "noindex_in_sitemap": 0,
+    "orphan_risk": 0,
+    "major_click_drops": 0,
+    "major_impression_drops": 0,
+    "slow_inp": 0
   },
   "source_files": {
+    "url_collection": "data/urls.csv",
+    "seo_audit": "data/latest_audit.csv",
     "seo_issues": "data/issues.csv",
     "search_console": "data/search_console_pages.csv",
     "url_inspection": "data/url_inspection.csv",
