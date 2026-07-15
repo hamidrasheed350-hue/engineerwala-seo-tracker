@@ -64,6 +64,9 @@ jobs:
       - name: Generate automatic SEO recommendations
         run: python crawler/recommendations.py
 
+      - name: Generate meaningful SEO alerts
+        run: python crawler/alerts.py
+
       - name: Verify required reports
         run: |
           test -s data/urls.csv
@@ -80,6 +83,9 @@ jobs:
           test -s data/pagespeed_summary.json
           test -s data/recommendations.csv
           test -s data/recommendations_summary.json
+          test -s data/alerts_current.csv
+          test -s data/alerts_log.csv
+          test -s data/alerts_summary.json
 
       - name: Commit updated reports
         run: |
