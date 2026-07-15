@@ -740,6 +740,22 @@ table.pagespeed {
     min-width: 1550px;
 }
 
+table.recommendations {
+    min-width: 1450px;
+}
+
+.recommendation-issue,
+.recommendation-action {
+    min-width: 280px;
+    max-width: 420px;
+    line-height: 1.5;
+}
+
+.recommendation-metric {
+    min-width: 150px;
+    color: var(--muted);
+}
+
 .ps-score {
     display: inline-block;
     min-width: 42px;
@@ -820,6 +836,10 @@ table.pagespeed {
 
             <button class="nav-button" data-page="pagespeed">
                 Page Speed
+            </button>
+
+            <button class="nav-button" data-page="recommendations">
+                Recommendations
             </button>
 
             <button class="nav-button" data-page="changes">
@@ -1653,6 +1673,172 @@ table.pagespeed {
             </div>
         </section>
 
+
+        <section class="page" id="page-recommendations">
+            <div class="page-header">
+                <div>
+                    <h1 class="page-title">
+                        Automatic Recommendations
+                    </h1>
+                    <p class="page-description">
+                        Prioritized actions generated from the SEO audit,
+                        Search Console, URL Inspection and PageSpeed reports.
+                    </p>
+                </div>
+
+                <div
+                    class="last-updated"
+                    id="last-updated-recommendations"
+                >
+                    Last updated: —
+                </div>
+            </div>
+
+            <div class="cards">
+                <article class="card info">
+                    <div class="card-label">
+                        Total Recommendations
+                    </div>
+                    <div
+                        class="card-value"
+                        id="recommendations-total"
+                    >
+                        —
+                    </div>
+                    <div class="card-line"></div>
+                    <div class="card-note">
+                        All generated actions
+                    </div>
+                </article>
+
+                <article class="card danger">
+                    <div class="card-label">
+                        High Priority
+                    </div>
+                    <div
+                        class="card-value"
+                        id="recommendations-high"
+                    >
+                        —
+                    </div>
+                    <div class="card-line"></div>
+                    <div class="card-note">
+                        Fix these actions first
+                    </div>
+                </article>
+
+                <article class="card warning">
+                    <div class="card-label">
+                        Medium Priority
+                    </div>
+                    <div
+                        class="card-value"
+                        id="recommendations-medium"
+                    >
+                        —
+                    </div>
+                    <div class="card-line"></div>
+                    <div class="card-note">
+                        Important improvement work
+                    </div>
+                </article>
+
+                <article class="card success">
+                    <div class="card-label">
+                        Affected URLs
+                    </div>
+                    <div
+                        class="card-value"
+                        id="recommendations-urls"
+                    >
+                        —
+                    </div>
+                    <div class="card-line"></div>
+                    <div class="card-note">
+                        Unique pages needing action
+                    </div>
+                </article>
+            </div>
+
+            <div class="panel">
+                <div class="panel-header">
+                    <div>
+                        <div class="panel-title">
+                            Recommended Actions
+                        </div>
+                        <div class="panel-note">
+                            Filter by priority, category or report source.
+                        </div>
+                    </div>
+
+                    <div
+                        class="panel-count"
+                        id="recommendations-visible-count"
+                    >
+                        0 recommendations
+                    </div>
+                </div>
+
+                <div class="panel-body">
+                    <div class="filters">
+                        <input
+                            type="search"
+                            id="recommendations-search"
+                            placeholder="Search URL, issue or action"
+                        >
+
+                        <select id="recommendations-priority">
+                            <option value="">
+                                All Priorities
+                            </option>
+                            <option value="critical">
+                                Critical
+                            </option>
+                            <option value="high">
+                                High
+                            </option>
+                            <option value="medium">
+                                Medium
+                            </option>
+                            <option value="low">
+                                Low
+                            </option>
+                        </select>
+
+                        <select id="recommendations-category">
+                            <option value="">
+                                All Categories
+                            </option>
+                        </select>
+
+                        <select id="recommendations-source">
+                            <option value="">
+                                All Sources
+                            </option>
+                        </select>
+
+                        <select id="recommendations-view">
+                            <option value="">
+                                All URLs
+                            </option>
+                            <option value="with-url">
+                                Page-specific only
+                            </option>
+                            <option value="without-url">
+                                General actions only
+                            </option>
+                        </select>
+                    </div>
+
+                    <div id="recommendations-table-container">
+                        <div class="loading">
+                            Loading recommendations...
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
         <section class="page" id="page-changes">
             <div class="page-header">
                 <div>
@@ -1823,6 +2009,30 @@ table.pagespeed {
 
                         <div class="summary-row">
                             <span class="summary-label">
+                                Automatic recommendations
+                            </span>
+                            <span
+                                class="summary-value"
+                                id="system-recommendations"
+                            >
+                                —
+                            </span>
+                        </div>
+
+                        <div class="summary-row">
+                            <span class="summary-label">
+                                Recommendation URLs
+                            </span>
+                            <span
+                                class="summary-value"
+                                id="system-recommendation-urls"
+                            >
+                                —
+                            </span>
+                        </div>
+
+                        <div class="summary-row">
+                            <span class="summary-label">
                                 GitHub Actions status
                             </span>
                             <span class="summary-value">
@@ -1872,6 +2082,15 @@ table.pagespeed {
                             </span>
                             <span class="summary-value">
                                 data/url_inspection*
+                            </span>
+                        </div>
+
+                        <div class="summary-row">
+                            <span class="summary-label">
+                                Recommendations reports
+                            </span>
+                            <span class="summary-value">
+                                data/recommendations*
                             </span>
                         </div>
 
@@ -1940,7 +2159,9 @@ const PATHS = {
     inspectionSummary: "data/url_inspection_summary.json",
     inspectionPages: "data/url_inspection.csv",
     pagespeedSummary: "data/pagespeed_summary.json",
-    pagespeedResults: "data/pagespeed_results.csv"
+    pagespeedResults: "data/pagespeed_results.csv",
+    recommendationsSummary: "data/recommendations_summary.json",
+    recommendations: "data/recommendations.csv"
 };
 
 let pages = [];
@@ -1953,6 +2174,8 @@ let inspectionSummary = {};
 let inspectionRows = [];
 let pagespeedSummary = {};
 let pagespeedRows = [];
+let recommendationsSummary = {};
+let recommendationRows = [];
 let inspectionMap = new Map();
 let gscMap = new Map();
 
@@ -1976,7 +2199,9 @@ async function init() {
             inspectionSummaryResult,
             inspectionPageResult,
             pagespeedSummaryResult,
-            pagespeedResult
+            pagespeedResult,
+            recommendationsSummaryResult,
+            recommendationsResult
         ] = await Promise.all([
             loadAudit(),
             loadCsv(PATHS.issues),
@@ -1986,7 +2211,9 @@ async function init() {
             loadJson(PATHS.inspectionSummary),
             loadCsv(PATHS.inspectionPages),
             loadJson(PATHS.pagespeedSummary),
-            loadCsv(PATHS.pagespeedResults)
+            loadCsv(PATHS.pagespeedResults),
+            loadJson(PATHS.recommendationsSummary),
+            loadCsv(PATHS.recommendations)
         ]);
 
         pages = auditResult.pages;
@@ -2002,6 +2229,11 @@ async function init() {
         pagespeedSummary = pagespeedSummaryResult || {};
         pagespeedRows = pagespeedResult.map(
             normalizePageSpeed
+        );
+        recommendationsSummary =
+            recommendationsSummaryResult || {};
+        recommendationRows = recommendationsResult.map(
+            normalizeRecommendation
         );
 
         inspectionMap = new Map(
@@ -2024,6 +2256,7 @@ async function init() {
         renderPerformance();
         renderInspection();
         renderPageSpeed();
+        renderRecommendations();
         renderChanges();
         renderSystem();
         renderDates();
@@ -2118,6 +2351,31 @@ function setupFilters() {
             "pagespeed-score",
             "change",
             filterPageSpeed
+        ],
+        [
+            "recommendations-search",
+            "input",
+            filterRecommendations
+        ],
+        [
+            "recommendations-priority",
+            "change",
+            filterRecommendations
+        ],
+        [
+            "recommendations-category",
+            "change",
+            filterRecommendations
+        ],
+        [
+            "recommendations-source",
+            "change",
+            filterRecommendations
+        ],
+        [
+            "recommendations-view",
+            "change",
+            filterRecommendations
         ]
     ];
 
@@ -2778,6 +3036,21 @@ function normalizePageSpeed(row) {
             stringValue(row.checked_at),
         error:
             stringValue(row.error)
+    };
+}
+
+
+
+function normalizeRecommendation(row) {
+    return {
+        priority: normalizePriority(row.priority),
+        category: stringValue(row.category || "SEO"),
+        url: stringValue(row.url),
+        issue: stringValue(row.issue),
+        recommendation: stringValue(row.recommendation),
+        source: stringValue(row.source || "Unknown"),
+        metric: stringValue(row.metric),
+        detected_at: stringValue(row.detected_at)
     };
 }
 
@@ -4220,6 +4493,234 @@ function pageSpeedMilliseconds(value) {
     )} ms`;
 }
 
+
+
+function renderRecommendations() {
+    const priorityCounts =
+        recommendationsSummary.priority_counts || {};
+
+    setText(
+        "recommendations-total",
+        recommendationsSummary.total_recommendations ??
+        recommendationRows.length
+    );
+
+    setText(
+        "recommendations-high",
+        priorityCounts.high ??
+        recommendationRows.filter(
+            row => row.priority === "high"
+        ).length
+    );
+
+    setText(
+        "recommendations-medium",
+        priorityCounts.medium ??
+        recommendationRows.filter(
+            row => row.priority === "medium"
+        ).length
+    );
+
+    setText(
+        "recommendations-urls",
+        recommendationsSummary.affected_urls ??
+        new Set(
+            recommendationRows
+                .map(row => row.url)
+                .filter(Boolean)
+        ).size
+    );
+
+    populateRecommendationFilter(
+        "recommendations-category",
+        recommendationRows.map(row => row.category)
+    );
+
+    populateRecommendationFilter(
+        "recommendations-source",
+        recommendationRows.map(row => row.source)
+    );
+
+    const container = document.getElementById(
+        "recommendations-table-container"
+    );
+
+    if (!recommendationRows.length) {
+        container.innerHTML = emptyState(
+            "No automatic recommendations found.",
+            "Run the daily workflow again."
+        );
+
+        setText(
+            "recommendations-visible-count",
+            "0 recommendations"
+        );
+
+        return;
+    }
+
+    container.innerHTML = `
+        <div class="table-wrap">
+            <table
+                class="recommendations"
+                id="recommendations-table"
+            >
+                <thead>
+                    <tr>
+                        <th>Priority</th>
+                        <th>Category</th>
+                        <th>URL</th>
+                        <th>Issue</th>
+                        <th>Recommended Action</th>
+                        <th>Source</th>
+                        <th>Metric</th>
+                        <th>Detected</th>
+                    </tr>
+                </thead>
+
+                <tbody>
+                    ${
+                        recommendationRows.map(row => `
+                            <tr
+                                data-search="${
+                                    escapeAttribute(
+                                        `${row.url} ${row.issue} ${row.recommendation} ${row.category} ${row.source}`
+                                            .toLowerCase()
+                                    )
+                                }"
+                                data-priority="${
+                                    escapeAttribute(row.priority)
+                                }"
+                                data-category="${
+                                    escapeAttribute(
+                                        row.category.toLowerCase()
+                                    )
+                                }"
+                                data-source="${
+                                    escapeAttribute(
+                                        row.source.toLowerCase()
+                                    )
+                                }"
+                                data-has-url="${
+                                    row.url ? "true" : "false"
+                                }"
+                            >
+                                <td>
+                                    ${
+                                        badge(
+                                            capitalize(row.priority),
+                                            row.priority
+                                        )
+                                    }
+                                </td>
+
+                                <td>
+                                    ${escapeHtml(row.category)}
+                                </td>
+
+                                <td>
+                                    ${
+                                        row.url
+                                            ? `
+                                                <a
+                                                    class="url-link"
+                                                    href="${
+                                                        escapeAttribute(
+                                                            row.url
+                                                        )
+                                                    }"
+                                                    target="_blank"
+                                                    rel="noopener noreferrer"
+                                                    title="${
+                                                        escapeAttribute(
+                                                            row.url
+                                                        )
+                                                    }"
+                                                >
+                                                    ${
+                                                        escapeHtml(
+                                                            shortenUrl(
+                                                                row.url
+                                                            )
+                                                        )
+                                                    }
+                                                </a>
+                                            `
+                                            : "—"
+                                    }
+                                </td>
+
+                                <td class="recommendation-issue">
+                                    ${escapeHtml(row.issue || "—")}
+                                </td>
+
+                                <td class="recommendation-action">
+                                    ${
+                                        escapeHtml(
+                                            row.recommendation || "—"
+                                        )
+                                    }
+                                </td>
+
+                                <td>
+                                    ${escapeHtml(row.source)}
+                                </td>
+
+                                <td class="recommendation-metric">
+                                    ${escapeHtml(row.metric || "—")}
+                                </td>
+
+                                <td>
+                                    ${
+                                        escapeHtml(
+                                            formatDate(
+                                                row.detected_at
+                                            )
+                                        )
+                                    }
+                                </td>
+                            </tr>
+                        `).join("")
+                    }
+                </tbody>
+            </table>
+        </div>
+    `;
+
+    setText(
+        "recommendations-visible-count",
+        `${recommendationRows.length} recommendations`
+    );
+}
+
+function populateRecommendationFilter(id, values) {
+    const select = document.getElementById(id);
+
+    if (!select || select.dataset.loaded === "true") {
+        return;
+    }
+
+    [
+        ...new Set(
+            values
+                .map(value => stringValue(value))
+                .filter(Boolean)
+        )
+    ]
+        .sort((first, second) =>
+            first.localeCompare(second)
+        )
+        .forEach(value => {
+            const option = document.createElement("option");
+
+            option.value = value.toLowerCase();
+            option.textContent = value;
+            select.appendChild(option);
+        });
+
+    select.dataset.loaded = "true";
+}
+
 function renderChanges() {
     const container = document.getElementById(
         "changelog-container"
@@ -4367,6 +4868,22 @@ function renderSystem() {
             ).length
         } not indexed`
     );
+
+    setText(
+        "system-recommendations",
+        recommendationsSummary.total_recommendations ??
+        recommendationRows.length
+    );
+
+    setText(
+        "system-recommendation-urls",
+        recommendationsSummary.affected_urls ??
+        new Set(
+            recommendationRows
+                .map(row => row.url)
+                .filter(Boolean)
+        ).size
+    );
 }
 
 function renderDates() {
@@ -4417,6 +4934,96 @@ function renderDates() {
             }`
         );
     }
+
+    if (recommendationsSummary.generated_at) {
+        setText(
+            "last-updated-recommendations",
+            `Updated: ${
+                formatDate(
+                    recommendationsSummary.generated_at
+                )
+            }`
+        );
+    }
+}
+
+
+
+function filterRecommendations() {
+    const table = document.getElementById(
+        "recommendations-table"
+    );
+
+    if (!table) {
+        return;
+    }
+
+    const search = inputValue(
+        "recommendations-search"
+    ).toLowerCase();
+
+    const priority = inputValue(
+        "recommendations-priority"
+    );
+
+    const category = inputValue(
+        "recommendations-category"
+    );
+
+    const source = inputValue(
+        "recommendations-source"
+    );
+
+    const view = inputValue(
+        "recommendations-view"
+    );
+
+    let visible = 0;
+
+    table
+        .querySelectorAll("tbody tr")
+        .forEach(row => {
+            const urlMatches =
+                !view ||
+                (
+                    view === "with-url" &&
+                    row.dataset.hasUrl === "true"
+                ) ||
+                (
+                    view === "without-url" &&
+                    row.dataset.hasUrl === "false"
+                );
+
+            const show =
+                (
+                    !search ||
+                    row.dataset.search.includes(search)
+                ) &&
+                (
+                    !priority ||
+                    row.dataset.priority === priority
+                ) &&
+                (
+                    !category ||
+                    row.dataset.category === category
+                ) &&
+                (
+                    !source ||
+                    row.dataset.source === source
+                ) &&
+                urlMatches;
+
+            row.hidden = !show;
+
+            if (show) {
+                visible += 1;
+            }
+        });
+
+    setText(
+        "recommendations-visible-count",
+        `${visible} recommendations`
+    );
 }
 
 function filterPages() {
