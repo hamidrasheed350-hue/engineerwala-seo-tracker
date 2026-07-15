@@ -5,10 +5,12 @@ import json
 from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any
+from urllib.parse import urlsplit, urlunsplit
 
 
 DATA_DIR = Path("data")
-
+URLS_FILE = DATA_DIR / "urls.csv"
+AUDIT_FILE = DATA_DIR / "latest_audit.csv"
 ISSUES_FILE = DATA_DIR / "issues.csv"
 GSC_FILE = DATA_DIR / "search_console_pages.csv"
 INSPECTION_FILE = DATA_DIR / "url_inspection.csv"
@@ -37,15 +39,62 @@ def text(value: Any) -> str:
     return str(value or "").strip()
 
 
-def number(
-    value: Any,
-    default: float = 0.0,
-) -> float:
+def number(value: Any, default: float = 0.0) -> float:
     try:
         return float(value)
-
     except (TypeError, ValueError):
         return default
+
+
+def integer(value: Any, default: int = 0) -> int:
+    return round(number(value, default))
+
+
+def truthy(value: Any) -> bool:
+    return text(value).lower() in {
+        "1",
+        "true",
+        "yes",
+        "y",
+        "on",
+        "index",
+        "indexed",
+    }
+
+
+def first(row: dict[str, Any], *keys: str) -> Any:
+    for key in keys:
+        value = row.get(key)
+        if value not in (None, ""):
+            return value
+    return ""
+
+
+def normalize_url(value: Any) -> str:
+    url = text(value)
+    if not url:
+        return ""
+
+    try:
+        parts = urlsplit(url)
+        if not parts.scheme or not parts.netloc:
+            return url.rstrip("/").lower()
+
+        path = parts.path or "/"
+        if path != "/":
+            path = path.rstrip("/")
+
+        return urlunsplit(
+            (
+                parts.scheme.lower(),
+                parts.netloc.lower(),
+                path,
+                parts.query,
+                "",
+            )
+        )
+    except ValueError:
+        return url.rstrip("/").lower()
 
 
 def read_csv(path: Path) -> list[dict[str, str]]:
@@ -53,12 +102,16 @@ def read_csv(path: Path) -> list[dict[str, str]]:
         print(f"Skipped missing file: {path}")
         return []
 
-    with path.open(
-        "r",
-        newline="",
-        encoding="utf-8-sig",
-    ) as handle:
-        return list(csv.DictReader(handle))
+    try:
+        with path.open(
+            "r",
+            newline="",
+            encoding="utf-8-sig",
+        ) as handle:
+            return list(csv.DictReader(handle))
+    except OSError as error:
+        print(f"Skipped unreadable file {path}: {error}")
+        return []
 
 
 def normalize_priority(value: Any) -> str:
@@ -66,83 +119,168 @@ def normalize_priority(value: Any) -> str:
 
     if priority in PRIORITY_ORDER:
         return priority
-
     if "critical" in priority:
         return "critical"
-
     if "high" in priority:
         return "high"
-
     if "low" in priority:
         return "low"
-
     return "medium"
 
 
 def classify_issue(issue: str) -> str:
     value = issue.lower()
 
-    if any(
-        word in value
-        for word in (
+    groups = {
+        "Technical": (
             "status",
             "404",
             "500",
             "crawl",
             "redirect",
             "server",
-        )
-    ):
-        return "Technical"
-
-    if any(
-        word in value
-        for word in (
+            "timeout",
+        ),
+        "Content": (
             "title",
             "meta",
             "h1",
             "heading",
             "word count",
             "content",
-        )
-    ):
-        return "Content"
-
-    if any(
-        word in value
-        for word in (
+        ),
+        "Indexing": (
             "canonical",
             "robots",
             "noindex",
             "index",
             "sitemap",
-        )
-    ):
-        return "Indexing"
-
-    if any(
-        word in value
-        for word in (
+        ),
+        "Images": (
             "image",
             "alt",
-        )
-    ):
-        return "Images"
-
-    if any(
-        word in value
-        for word in (
+        ),
+        "Internal Links": (
             "link",
             "orphan",
-        )
-    ):
-        return "Internal Links"
+        ),
+        "Performance": (
+            "lcp",
+            "cls",
+            "inp",
+            "speed",
+            "performance",
+            "blocking",
+        ),
+    }
+
+    for category, keywords in groups.items():
+        if any(keyword in value for keyword in keywords):
+            return category
 
     return "SEO"
 
 
+def status_code(row: dict[str, Any]) -> int:
+    return integer(
+        first(
+            row,
+            "status_code",
+            "status",
+            "http_status",
+            "response_code",
+        )
+    )
+
+
+def is_noindex(row: dict[str, Any]) -> bool:
+    robots = text(
+        first(
+            row,
+            "robots_directives",
+            "robots",
+            "x_robots_tag",
+        )
+    ).lower()
+
+    return (
+        truthy(first(row, "is_noindex", "noindex"))
+        or "noindex" in robots
+    )
+
+
+def internal_links(row: dict[str, Any]) -> int:
+    return integer(
+        first(
+            row,
+            "internal_links_count",
+            "internal_links",
+            "links_internal",
+        )
+    )
+
+
+def find_sitemap_urls(
+    url_rows: list[dict[str, str]],
+    inspection_rows: list[dict[str, str]],
+) -> set[str]:
+    found: set[str] = set()
+
+    for row in url_rows:
+        url = normalize_url(
+            first(
+                row,
+                "url",
+                "page_url",
+                "link",
+                "loc",
+            )
+        )
+        source = text(
+            first(
+                row,
+                "source",
+                "url_source",
+                "origin",
+                "discovered_from",
+                "type",
+            )
+        ).lower()
+        explicit = first(
+            row,
+            "in_sitemap",
+            "is_in_sitemap",
+            "sitemap_present",
+        )
+
+        if url and (
+            "sitemap" in source
+            or truthy(explicit)
+        ):
+            found.add(url)
+
+    for row in inspection_rows:
+        url = normalize_url(row.get("url"))
+        if url and text(row.get("sitemaps")):
+            found.add(url)
+
+    return found
+
+
 def main() -> int:
     generated_at = utc_now()
+
+    url_rows = read_csv(URLS_FILE)
+    audit_rows = read_csv(AUDIT_FILE)
+    issue_rows = read_csv(ISSUES_FILE)
+    gsc_rows = read_csv(GSC_FILE)
+    inspection_rows = read_csv(INSPECTION_FILE)
+    pagespeed_rows = read_csv(PAGESPEED_FILE)
+
+    sitemap_set = find_sitemap_urls(
+        url_rows,
+        inspection_rows,
+    )
 
     recommendations: list[dict[str, Any]] = []
     seen: set[tuple[str, str, str, str]] = set()
@@ -165,7 +303,7 @@ def main() -> int:
             return
 
         key = (
-            clean_url,
+            normalize_url(clean_url),
             category.lower(),
             clean_issue.lower(),
             clean_recommendation.lower(),
@@ -187,60 +325,101 @@ def main() -> int:
             "detected_at": generated_at,
         })
 
-    # -------------------------------------------------
-    # Existing SEO audit issues
-    # -------------------------------------------------
-
-    for row in read_csv(ISSUES_FILE):
+    for row in issue_rows:
         issue = text(
-            row.get("issue")
-            or row.get("issue_type")
-            or row.get("problem")
-            or row.get("message")
-        )
-
-        action = text(
-            row.get("action")
-            or row.get("recommended_action")
-            or row.get("recommendation")
-            or row.get("fix")
-        )
-
-        if not action:
-            action = (
-                "Review the page and correct the reported "
-                "SEO issue."
+            first(
+                row,
+                "issue",
+                "issue_type",
+                "problem",
+                "message",
             )
+        )
+        action = text(
+            first(
+                row,
+                "action",
+                "recommended_action",
+                "recommendation",
+                "fix",
+            )
+        ) or "Review the page and correct the reported SEO issue."
 
         add(
             priority=text(
-                row.get("severity")
-                or row.get("priority")
-                or row.get("level")
+                first(
+                    row,
+                    "severity",
+                    "priority",
+                    "level",
+                )
             ),
             category=classify_issue(issue),
             url=text(
-                row.get("url")
-                or row.get("page_url")
-                or row.get("link")
+                first(
+                    row,
+                    "url",
+                    "page_url",
+                    "link",
+                )
             ),
             issue=issue or "SEO audit issue",
             recommendation=action,
             source="SEO Audit",
         )
 
-    # -------------------------------------------------
-    # Google URL Inspection recommendations
-    # -------------------------------------------------
+    for row in audit_rows:
+        url = text(
+            first(
+                row,
+                "url",
+                "page_url",
+                "link",
+            )
+        )
+        normalized = normalize_url(url)
+        code = status_code(row)
+        links = internal_links(row)
 
-    for row in read_csv(INSPECTION_FILE):
+        if is_noindex(row) and normalized in sitemap_set:
+            add(
+                priority="critical",
+                category="Indexing",
+                url=url,
+                issue="Noindex page is present in the XML sitemap",
+                recommendation=(
+                    "Decide whether this page should appear in Google. "
+                    "If it should be indexed, remove the noindex directive. "
+                    "If it should remain excluded, remove it from the XML "
+                    "sitemap. Regenerate the sitemap and validate the URL "
+                    "in Google Search Console."
+                ),
+                source="Audit + Sitemap",
+                metric="noindex + sitemap",
+            )
+
+        if code == 200 and links == 0:
+            add(
+                priority="high",
+                category="Internal Links",
+                url=url,
+                issue=(
+                    "Orphan-risk page: HTTP 200 with zero internal links"
+                ),
+                recommendation=(
+                    "Add at least two relevant internal links from existing "
+                    "indexed pages, category pages or navigation. Use "
+                    "descriptive anchor text and confirm the next crawl "
+                    "reports more than zero internal links."
+                ),
+                source="SEO Audit",
+                metric="200 status, 0 internal links",
+            )
+
+    for row in inspection_rows:
         url = text(row.get("url"))
-        index_status = text(
-            row.get("index_status")
-        )
-        coverage = text(
-            row.get("coverage_state")
-        )
+        index_status = text(row.get("index_status"))
+        coverage = text(row.get("coverage_state"))
         error = text(row.get("error"))
 
         if error:
@@ -250,128 +429,145 @@ def main() -> int:
                 url=url,
                 issue="Google URL inspection failed",
                 recommendation=(
-                    "Review Search Console access and run "
-                    "URL Inspection again."
+                    "Review Search Console access, confirm that the property "
+                    "matches the URL and run URL Inspection again."
                 ),
                 source="URL Inspection",
                 metric=error,
             )
-
         elif index_status.lower() != "indexed":
             add(
                 priority="high",
                 category="Indexing",
                 url=url,
-                issue=(
-                    coverage
-                    or
-                    "Page is not indexed by Google"
-                ),
+                issue=coverage or "Page is not indexed by Google",
                 recommendation=(
-                    "Confirm that the page is indexable, "
-                    "included in the XML sitemap and linked "
-                    "internally. After correcting any issue, "
+                    "Confirm HTTP 200, indexability, canonical, XML sitemap "
+                    "presence and internal links. Correct the cause and then "
                     "request indexing in Google Search Console."
                 ),
                 source="URL Inspection",
                 metric=index_status or "Not indexed",
             )
 
-    # -------------------------------------------------
-    # Search Console recommendations
-    # -------------------------------------------------
-
-    for row in read_csv(GSC_FILE):
+    for row in gsc_rows:
         url = text(row.get("page"))
 
-        clicks = number(
-            row.get("current_clicks")
-        )
+        clicks = number(row.get("current_clicks"))
+        previous_clicks = number(row.get("previous_clicks"))
+        clicks_change = number(row.get("clicks_change"))
 
-        impressions = number(
-            row.get("current_impressions")
-        )
-
+        impressions = number(row.get("current_impressions"))
         previous_impressions = number(
             row.get("previous_impressions")
         )
-
         impressions_change = number(
             row.get("impressions_change")
         )
 
-        position = number(
-            row.get("current_position")
-        )
-
-        ctr = number(
-            row.get("current_ctr_percent")
-        )
+        position = number(row.get("current_position"))
+        ctr = number(row.get("current_ctr_percent"))
 
         if impressions >= 20 and clicks == 0:
             add(
                 priority="medium",
                 category="Search Performance",
                 url=url,
-                issue=(
-                    "Page receives impressions but no clicks"
-                ),
+                issue="Page receives impressions but no clicks",
                 recommendation=(
-                    "Improve the SEO title and meta description "
-                    "so they better match search intent and "
-                    "encourage users to click."
+                    "Rewrite the SEO title and meta description to match "
+                    "search intent, include the main topic and communicate "
+                    "a clearer benefit. Recheck CTR after the next period."
                 ),
                 source="Search Console",
-                metric=(
-                    f"{int(impressions)} impressions, "
-                    "0 clicks"
-                ),
+                metric=f"{int(impressions)} impressions, 0 clicks",
             )
 
-        if (
-            impressions >= 20
-            and 8 <= position <= 20
-        ):
+        if impressions >= 20 and 8 <= position <= 20:
             add(
                 priority="medium",
                 category="Search Performance",
                 url=url,
-                issue=(
-                    "Page is close to the first page "
-                    "of Google"
-                ),
+                issue="Page is close to the first page of Google",
                 recommendation=(
-                    "Expand the content, improve internal links "
-                    "and strengthen relevance for the search "
-                    "queries already generating impressions."
+                    "Refresh the page around queries already generating "
+                    "impressions, answer missing subtopics and add relevant "
+                    "internal links from stronger indexed pages."
                 ),
                 source="Search Console",
                 metric=f"Average position {position:.1f}",
             )
 
-        if (
-            impressions_change <= -20
+        clicks_dropped = (
+            clicks_change <= -5
             or (
-                previous_impressions >= 50
-                and impressions
-                < previous_impressions * 0.7
+                previous_clicks >= 10
+                and clicks <= previous_clicks * 0.70
             )
-        ):
+        )
+
+        if clicks_dropped:
+            percentage = (
+                (
+                    clicks - previous_clicks
+                )
+                / previous_clicks
+                * 100
+                if previous_clicks > 0
+                else 0
+            )
+
             add(
                 priority="high",
                 category="Search Performance",
                 url=url,
-                issue="Search impressions have dropped",
+                issue="Search clicks have dropped significantly",
                 recommendation=(
-                    "Check whether rankings, content, title, "
-                    "indexing or competing pages changed. "
-                    "Compare the current page with the "
-                    "previously successful version."
+                    "Compare the current and previous page version, check "
+                    "indexing and ranking changes, review the main queries "
+                    "and inspect whether the title or search intent changed."
                 ),
                 source="Search Console",
                 metric=(
-                    f"Impressions change "
-                    f"{impressions_change:+.0f}"
+                    f"Clicks {previous_clicks:.0f} → {clicks:.0f} "
+                    f"({percentage:+.0f}%)"
+                ),
+            )
+
+        impressions_dropped = (
+            impressions_change <= -20
+            or (
+                previous_impressions >= 50
+                and impressions
+                <= previous_impressions * 0.70
+            )
+        )
+
+        if impressions_dropped:
+            percentage = (
+                (
+                    impressions - previous_impressions
+                )
+                / previous_impressions
+                * 100
+                if previous_impressions > 0
+                else 0
+            )
+
+            add(
+                priority="high",
+                category="Search Performance",
+                url=url,
+                issue="Search impressions have dropped significantly",
+                recommendation=(
+                    "Check indexing, ranking position, query relevance and "
+                    "recent content changes. Compare the page with competing "
+                    "results and restore or expand useful sections."
+                ),
+                source="Search Console",
+                metric=(
+                    f"Impressions {previous_impressions:.0f} → "
+                    f"{impressions:.0f} ({percentage:+.0f}%)"
                 ),
             )
 
@@ -385,62 +581,32 @@ def main() -> int:
                 category="Search Performance",
                 url=url,
                 issue=(
-                    "Low click-through rate for a "
-                    "high-visibility page"
+                    "Low click-through rate for a high-visibility page"
                 ),
                 recommendation=(
-                    "Rewrite the SEO title and description "
-                    "to communicate a clearer benefit and "
-                    "match the main search query."
+                    "Rewrite the title and meta description to match the "
+                    "main query, show a specific benefit and differentiate "
+                    "the result from competing pages."
                 ),
                 source="Search Console",
-                metric=(
-                    f"CTR {ctr:.2f}%, "
-                    f"position {position:.1f}"
-                ),
+                metric=f"CTR {ctr:.2f}%, position {position:.1f}",
             )
 
-    # -------------------------------------------------
-    # PageSpeed recommendations
-    # -------------------------------------------------
-
-    for row in read_csv(PAGESPEED_FILE):
+    for row in pagespeed_rows:
         url = text(row.get("url"))
-        strategy = text(
-            row.get("strategy")
-        ).capitalize()
-
+        strategy = text(row.get("strategy")).capitalize()
         error = text(row.get("error"))
 
-        performance = number(
-            row.get("performance_score")
+        performance = number(row.get("performance_score"))
+        accessibility = number(row.get("accessibility_score"))
+        lcp = number(row.get("largest_contentful_paint_ms"))
+        cls = number(row.get("cumulative_layout_shift"))
+        tbt = number(row.get("total_blocking_time_ms"))
+        inp = number(
+            row.get("interaction_to_next_paint_ms")
         )
-
-        accessibility = number(
-            row.get("accessibility_score")
-        )
-
-        lcp = number(
-            row.get(
-                "largest_contentful_paint_ms"
-            )
-        )
-
-        cls = number(
-            row.get(
-                "cumulative_layout_shift"
-            )
-        )
-
-        tbt = number(
-            row.get(
-                "total_blocking_time_ms"
-            )
-        )
-
-        opportunities = text(
-            row.get("top_opportunities")
-        )
+        inp_source = text(row.get("inp_source"))
+        opportunities = text(row.get("top_opportunities"))
 
         if error:
             add(
@@ -449,34 +615,29 @@ def main() -> int:
                 url=url,
                 issue=f"{strategy} PageSpeed test failed",
                 recommendation=(
-                    "Review the PageSpeed API response and "
-                    "run the performance test again."
+                    "Review the PageSpeed error, confirm the URL is publicly "
+                    "accessible and run the test again. The remaining SEO "
+                    "workflow should continue even when this test fails."
                 ),
                 source="PageSpeed",
                 metric=error,
             )
-
             continue
 
         if performance < 50:
             priority = "critical"
-
         elif performance < 75:
             priority = "high"
-
         elif performance < 90:
             priority = "medium"
-
         else:
             priority = ""
 
         if priority:
             recommendation = (
-                "Review the Lighthouse opportunities and "
-                "reduce render-blocking resources, large "
-                "images and unnecessary JavaScript."
+                "Reduce render-blocking resources, optimize large images "
+                "and remove or delay unnecessary JavaScript."
             )
-
             if opportunities:
                 recommendation += (
                     f" Main opportunities: {opportunities}."
@@ -487,36 +648,28 @@ def main() -> int:
                 category="Performance",
                 url=url,
                 issue=(
-                    f"{strategy} performance score "
-                    f"is {performance:.0f}"
+                    f"{strategy} performance score is "
+                    f"{performance:.0f}"
                 ),
                 recommendation=recommendation,
                 source="PageSpeed",
                 metric=f"Score {performance:.0f}",
             )
 
-        if lcp > 4000:
-            lcp_priority = "critical"
-
-        elif lcp > 2500:
-            lcp_priority = "high"
-
-        else:
-            lcp_priority = ""
-
-        if lcp_priority:
+        if lcp > 2500:
             add(
-                priority=lcp_priority,
+                priority=(
+                    "critical"
+                    if lcp > 4000
+                    else "high"
+                ),
                 category="Core Web Vitals",
                 url=url,
-                issue=(
-                    f"{strategy} Largest Contentful "
-                    "Paint is slow"
-                ),
+                issue=f"{strategy} Largest Contentful Paint is slow",
                 recommendation=(
-                    "Optimize the main visible image or content, "
-                    "preload the LCP resource and reduce server "
-                    "and render-blocking delays."
+                    "Identify the LCP element, optimize and correctly size "
+                    "its image, preload the critical resource and reduce "
+                    "server or render-blocking delays."
                 ),
                 source="PageSpeed",
                 metric=f"LCP {lcp / 1000:.2f}s",
@@ -531,16 +684,38 @@ def main() -> int:
                 ),
                 category="Core Web Vitals",
                 url=url,
-                issue=(
-                    f"{strategy} layout shift is too high"
-                ),
+                issue=f"{strategy} layout shift is too high",
                 recommendation=(
-                    "Reserve width and height for images, ads "
-                    "and embedded content. Avoid inserting "
-                    "content above existing page elements."
+                    "Reserve width and height for images, ads and embeds. "
+                    "Avoid inserting late-loading content above existing "
+                    "elements and stabilize web-font loading."
                 ),
                 source="PageSpeed",
                 metric=f"CLS {cls:.3f}",
+            )
+
+        if (
+            inp > 200
+            and inp_source in {"page", "origin"}
+        ):
+            add(
+                priority=(
+                    "high"
+                    if inp > 500
+                    else "medium"
+                ),
+                category="Core Web Vitals",
+                url=url,
+                issue=(
+                    f"{strategy} Interaction to Next Paint is slow"
+                ),
+                recommendation=(
+                    "Reduce long JavaScript tasks, split heavy event handlers, "
+                    "defer non-essential scripts and update the page quickly "
+                    "after user input. Recheck INP using field data."
+                ),
+                source="PageSpeed",
+                metric=f"INP {inp:.0f}ms ({inp_source} data)",
             )
 
         if tbt > 300:
@@ -552,12 +727,9 @@ def main() -> int:
                 ),
                 category="Performance",
                 url=url,
-                issue=(
-                    f"{strategy} Total Blocking Time "
-                    "is too high"
-                ),
+                issue=f"{strategy} Total Blocking Time is too high",
                 recommendation=(
-                    "Reduce unused JavaScript, split long tasks "
+                    "Reduce unused JavaScript, split long main-thread tasks "
                     "and delay non-essential third-party scripts."
                 ),
                 source="PageSpeed",
@@ -570,12 +742,12 @@ def main() -> int:
                 category="Accessibility",
                 url=url,
                 issue=(
-                    f"{strategy} accessibility score "
-                    f"is {accessibility:.0f}"
+                    f"{strategy} accessibility score is "
+                    f"{accessibility:.0f}"
                 ),
                 recommendation=(
-                    "Review Lighthouse accessibility audits, "
-                    "including contrast, labels, link names "
+                    "Review Lighthouse accessibility audits, especially "
+                    "contrast, form labels, link names, image alternatives "
                     "and heading structure."
                 ),
                 source="PageSpeed",
@@ -589,7 +761,7 @@ def main() -> int:
                 99,
             ),
             row["category"].lower(),
-            row["url"].lower(),
+            normalize_url(row["url"]),
             row["issue"].lower(),
         )
     )
@@ -619,7 +791,6 @@ def main() -> int:
             handle,
             fieldnames=fields,
         )
-
         writer.writeheader()
         writer.writerows(recommendations)
 
@@ -633,51 +804,81 @@ def main() -> int:
     }
 
     category_counts: dict[str, int] = {}
+    source_counts: dict[str, int] = {}
 
     for row in recommendations:
         category = row["category"]
+        source = row["source"]
 
         category_counts[category] = (
-            category_counts.get(
-                category,
-                0,
-            )
+            category_counts.get(category, 0)
+            + 1
+        )
+        source_counts[source] = (
+            source_counts.get(source, 0)
             + 1
         )
 
     affected_urls = {
-        row["url"]
+        normalize_url(row["url"])
         for row in recommendations
         if row["url"]
     }
 
     summary = {
         "generated_at": generated_at,
-        "total_recommendations": len(
-            recommendations
-        ),
-        "affected_urls": len(
-            affected_urls
-        ),
+        "total_recommendations": len(recommendations),
+        "affected_urls": len(affected_urls),
         "priority_counts": priority_counts,
         "category_counts": dict(
             sorted(
                 category_counts.items(),
-                key=lambda item: (
-                    -item[1],
-                    item[0],
-                ),
+                key=lambda item: (-item[1], item[0]),
             )
         ),
+        "source_counts": dict(
+            sorted(
+                source_counts.items(),
+                key=lambda item: (-item[1], item[0]),
+            )
+        ),
+        "special_rule_counts": {
+            "noindex_in_sitemap": sum(
+                1
+                for row in recommendations
+                if row["metric"] == "noindex + sitemap"
+            ),
+            "orphan_risk": sum(
+                1
+                for row in recommendations
+                if row["metric"]
+                == "200 status, 0 internal links"
+            ),
+            "major_click_drops": sum(
+                1
+                for row in recommendations
+                if row["issue"]
+                == "Search clicks have dropped significantly"
+            ),
+            "major_impression_drops": sum(
+                1
+                for row in recommendations
+                if row["issue"]
+                == "Search impressions have dropped significantly"
+            ),
+            "slow_inp": sum(
+                1
+                for row in recommendations
+                if "Interaction to Next Paint" in row["issue"]
+            ),
+        },
         "source_files": {
+            "url_collection": str(URLS_FILE),
+            "seo_audit": str(AUDIT_FILE),
             "seo_issues": str(ISSUES_FILE),
             "search_console": str(GSC_FILE),
-            "url_inspection": str(
-                INSPECTION_FILE
-            ),
-            "pagespeed": str(
-                PAGESPEED_FILE
-            ),
+            "url_inspection": str(INSPECTION_FILE),
+            "pagespeed": str(PAGESPEED_FILE),
         },
     }
 
@@ -696,7 +897,6 @@ def main() -> int:
         f"Generated {len(recommendations)} "
         "automatic recommendations."
     )
-
     print(f"Saved: {OUTPUT_CSV}")
     print(f"Saved: {OUTPUT_JSON}")
 
