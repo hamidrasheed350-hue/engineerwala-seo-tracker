@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-07-17T06:03:22Z",
+  "generated_at": "2026-07-18T05:42:51Z",
   "total_recommendations": 247,
   "affected_urls": 77,
   "priority_counts": {
@@ -24,7 +24,7 @@
     "noindex_in_sitemap": 0,
     "orphan_risk": 0,
     "major_click_drops": 0,
-    "major_impression_drops": 0,
+    "major_impression_drops": 1,
     "slow_inp": 0
   },
   "source_files": {
