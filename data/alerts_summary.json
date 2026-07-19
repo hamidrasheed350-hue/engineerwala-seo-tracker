@@ -1,9 +1,9 @@
 {
-  "generated_at": "2026-07-18T05:42:51Z",
+  "generated_at": "2026-07-19T06:14:46Z",
   "delivery_method": "dashboard_only",
   "email_notifications_enabled": false,
   "current_alerts": 2,
-  "new_alerts_this_run": 2,
+  "new_alerts_this_run": 0,
   "resolved_alerts": 0,
   "priority_counts": {
     "critical": 0,
