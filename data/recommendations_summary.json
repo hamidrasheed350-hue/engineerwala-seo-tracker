@@ -1,30 +1,30 @@
 {
-  "generated_at": "2026-07-23T06:17:20Z",
-  "total_recommendations": 256,
-  "affected_urls": 80,
+  "generated_at": "2026-07-24T06:11:52Z",
+  "total_recommendations": 261,
+  "affected_urls": 81,
   "priority_counts": {
     "critical": 0,
-    "high": 23,
-    "medium": 206,
+    "high": 25,
+    "medium": 209,
     "low": 27
   },
   "category_counts": {
-    "Content": 149,
-    "Images": 69,
+    "Content": 151,
+    "Images": 70,
     "SEO": 26,
-    "Search Performance": 7,
-    "Indexing": 5
+    "Search Performance": 8,
+    "Indexing": 6
   },
   "source_counts": {
-    "SEO Audit": 244,
-    "Search Console": 7,
-    "URL Inspection": 5
+    "SEO Audit": 247,
+    "Search Console": 8,
+    "URL Inspection": 6
   },
   "special_rule_counts": {
     "noindex_in_sitemap": 0,
     "orphan_risk": 0,
     "major_click_drops": 0,
-    "major_impression_drops": 2,
+    "major_impression_drops": 3,
     "slow_inp": 0
   },
   "source_files": {

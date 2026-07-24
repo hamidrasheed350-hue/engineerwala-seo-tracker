@@ -1,10 +1,10 @@
 {
-  "generated_at": "2026-07-23T06:14:53Z",
+  "generated_at": "2026-07-24T06:09:33Z",
   "site_url": "https://engineerwala.com/",
   "inspection_limit": 20,
   "inspected_urls": 20,
-  "indexed": 15,
-  "not_indexed": 5,
+  "indexed": 14,
+  "not_indexed": 6,
   "inspection_unavailable": 0,
   "unknown": 0
 }
