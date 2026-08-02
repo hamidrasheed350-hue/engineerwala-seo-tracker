@@ -1,7 +1,7 @@
 {
-  "generated_at": "2026-07-31T06:34:08Z",
+  "generated_at": "2026-08-02T06:19:48Z",
   "total_recommendations": 262,
-  "affected_urls": 84,
+  "affected_urls": 85,
   "priority_counts": {
     "critical": 0,
     "high": 22,
@@ -9,8 +9,8 @@
     "low": 27
   },
   "category_counts": {
-    "Content": 154,
-    "Images": 73,
+    "Content": 153,
+    "Images": 74,
     "SEO": 26,
     "Indexing": 5,
     "Search Performance": 4
