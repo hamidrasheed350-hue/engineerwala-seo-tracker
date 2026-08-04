@@ -1,15 +1,15 @@
 {
-  "generated_at": "2026-08-03T06:44:01Z",
-  "total_recommendations": 263,
+  "generated_at": "2026-08-04T06:14:05Z",
+  "total_recommendations": 262,
   "affected_urls": 85,
   "priority_counts": {
     "critical": 0,
     "high": 24,
-    "medium": 212,
+    "medium": 211,
     "low": 27
   },
   "category_counts": {
-    "Content": 153,
+    "Content": 152,
     "Images": 74,
     "SEO": 26,
     "Indexing": 5,
@@ -17,7 +17,7 @@
     "Core Web Vitals": 1
   },
   "source_counts": {
-    "SEO Audit": 253,
+    "SEO Audit": 252,
     "URL Inspection": 5,
     "Search Console": 4,
     "PageSpeed": 1
