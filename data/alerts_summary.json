@@ -1,19 +1,17 @@
 {
-  "generated_at": "2026-08-06T06:11:42Z",
+  "generated_at": "2026-08-07T05:10:59Z",
   "delivery_method": "dashboard_only",
   "email_notifications_enabled": false,
-  "current_alerts": 1,
+  "current_alerts": 0,
   "new_alerts_this_run": 0,
-  "resolved_alerts": 7,
+  "resolved_alerts": 8,
   "priority_counts": {
     "critical": 0,
-    "high": 1,
+    "high": 0,
     "medium": 0,
     "low": 0
   },
-  "alert_type_counts": {
-    "major_impression_drop": 1
-  },
+  "alert_type_counts": {},
   "meaningful_alert_rules": [
     "critical SEO issue",
     "HTTP 404",

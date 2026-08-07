@@ -1,2 +1,1 @@
 fingerprint,priority,alert_type,url,message,recommended_action,source,metric,first_detected,last_seen,occurrences,status
-42f6f95b2d3ccac0bf2fd16c,high,major_impression_drop,https://engineerwala.com/oil-in-spark-plug-well/,Search impressions have dropped significantly,"Check indexing, ranking position, query relevance and recent content changes. Compare the page with competing results and restore or expand useful sections.",Search Console,Impressions 48 → 21 (-56%),2026-07-20T06:34:04Z,2026-08-06T06:11:42Z,9,open
