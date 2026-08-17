@@ -1,23 +1,23 @@
 {
-  "generated_at": "2026-08-15T04:01:51Z",
-  "total_recommendations": 247,
+  "generated_at": "2026-08-17T04:10:25Z",
+  "total_recommendations": 246,
   "affected_urls": 89,
   "priority_counts": {
     "critical": 0,
     "high": 26,
-    "medium": 192,
+    "medium": 191,
     "low": 29
   },
   "category_counts": {
     "Content": 128,
     "Images": 78,
     "SEO": 28,
-    "Search Performance": 7,
-    "Indexing": 6
+    "Indexing": 6,
+    "Search Performance": 6
   },
   "source_counts": {
     "SEO Audit": 234,
-    "Search Console": 7,
+    "Search Console": 6,
     "URL Inspection": 6
   },
   "special_rule_counts": {
