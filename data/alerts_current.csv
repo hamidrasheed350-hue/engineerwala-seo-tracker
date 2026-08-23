@@ -1,1 +1,2 @@
 fingerprint,priority,alert_type,url,message,recommended_action,source,metric,first_detected,last_seen,occurrences,status
+b8a5e4593ae40e75d7e52e60,high,major_impression_drop,https://engineerwala.com/what-is-a-sway-bar/,Search impressions have dropped significantly,"Check indexing, ranking position, query relevance and recent content changes. Compare the page with competing results and restore or expand useful sections.",Search Console,Impressions 37 → 9 (-76%),2026-08-23T04:08:46Z,2026-08-23T04:08:46Z,1,open
