@@ -1,18 +1,18 @@
 {
-  "generated_at": "2026-08-30T09:24:33Z",
+  "generated_at": "2026-08-31T09:56:17Z",
   "delivery_method": "dashboard_only",
   "email_notifications_enabled": false,
-  "current_alerts": 3,
-  "new_alerts_this_run": 0,
+  "current_alerts": 5,
+  "new_alerts_this_run": 2,
   "resolved_alerts": 7,
   "priority_counts": {
     "critical": 0,
-    "high": 3,
+    "high": 5,
     "medium": 0,
     "low": 0
   },
   "alert_type_counts": {
-    "major_impression_drop": 3
+    "major_impression_drop": 5
   },
   "meaningful_alert_rules": [
     "critical SEO issue",
