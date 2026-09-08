@@ -1,28 +1,34 @@
 {
-  "generated_at": "2026-09-07T08:30:45Z",
+  "generated_at": "2026-09-08T08:16:38Z",
   "site_url": "https://engineerwala.com/",
-  "run_status": "healthy",
+  "run_status": "degraded",
   "api_key_configured": true,
   "url_limit": 5,
   "selected_urls": 5,
   "total_tests": 10,
-  "successful_tests": 10,
-  "failed_tests": 0,
+  "successful_tests": 9,
+  "failed_tests": 1,
   "inp_available_tests": 0,
-  "inp_unavailable_tests": 10,
+  "inp_unavailable_tests": 9,
   "mobile": {
-    "average_performance_score": 100,
+    "average_performance_score": 99,
     "average_accessibility_score": 96,
     "average_best_practices_score": 100,
     "average_seo_score": 100,
     "average_inp_ms": 0
   },
   "desktop": {
-    "average_performance_score": 100,
+    "average_performance_score": 99,
     "average_accessibility_score": 96,
     "average_best_practices_score": 100,
     "average_seo_score": 100,
     "average_inp_ms": 0
   },
-  "errors": []
+  "errors": [
+    {
+      "url": "https://engineerwala.com/basic-car-door-parts/",
+      "strategy": "mobile",
+      "message": "Temporary PageSpeed API error 500"
+    }
+  ]
 }
