@@ -1,20 +1,20 @@
 {
-  "generated_at": "2026-09-18T08:30:30Z",
+  "generated_at": "2026-09-19T08:13:27Z",
   "site_url": "https://engineerwala.com/",
-  "run_status": "degraded",
+  "run_status": "healthy",
   "api_key_configured": true,
   "url_limit": 5,
   "selected_urls": 5,
   "total_tests": 10,
-  "successful_tests": 9,
-  "failed_tests": 1,
+  "successful_tests": 10,
+  "failed_tests": 0,
   "inp_available_tests": 0,
-  "inp_unavailable_tests": 9,
+  "inp_unavailable_tests": 10,
   "mobile": {
     "average_performance_score": 100,
     "average_accessibility_score": 96,
     "average_best_practices_score": 100,
-    "average_seo_score": 98,
+    "average_seo_score": 100,
     "average_inp_ms": 0
   },
   "desktop": {
@@ -24,11 +24,5 @@
     "average_seo_score": 100,
     "average_inp_ms": 0
   },
-  "errors": [
-    {
-      "url": "https://engineerwala.com/which-side-is-the-brake/",
-      "strategy": "mobile",
-      "message": "Temporary PageSpeed API error 500"
-    }
-  ]
+  "errors": []
 }
