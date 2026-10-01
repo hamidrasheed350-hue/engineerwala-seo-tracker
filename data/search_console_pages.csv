@@ -1,10 +1,10 @@
 page,current_clicks,previous_clicks,clicks_change,clicks_change_percent,current_impressions,previous_impressions,impressions_change,impressions_change_percent,current_ctr_percent,previous_ctr_percent,ctr_change_points,current_position,previous_position,position_change
-https://engineerwala.com/types-of-cars/,1.0,0.0,1.0,,6.0,6.0,0.0,0.0,16.67,0.0,16.67,1.17,1.67,-0.5
-https://engineerwala.com/basic-car-door-parts/,0.0,1.0,-1.0,-100.0,67.0,30.0,37.0,123.33,0.0,3.33,-3.33,20.12,27.27,-7.15
-https://engineerwala.com/bad-wheel-bearing-symptoms/,0.0,0.0,0.0,,12.0,0.0,12.0,,0.0,0.0,0.0,32.08,0.0,32.08
-https://engineerwala.com/basic-car-interior-parts-name/,0.0,0.0,0.0,,6.0,4.0,2.0,50.0,0.0,0.0,0.0,3.67,2.25,1.42
+https://engineerwala.com/types-of-cars/,1.0,0.0,1.0,,10.0,5.0,5.0,100.0,10.0,0.0,10.0,1.2,1.8,-0.6
+https://engineerwala.com/basic-car-door-parts/,0.0,1.0,-1.0,-100.0,68.0,26.0,42.0,161.54,0.0,3.85,-3.85,20.5,23.77,-3.27
+https://engineerwala.com/bad-wheel-bearing-symptoms/,0.0,0.0,0.0,,13.0,0.0,13.0,,0.0,0.0,0.0,33.23,0.0,33.23
+https://engineerwala.com/basic-car-interior-parts-name/,0.0,0.0,0.0,,6.0,5.0,1.0,20.0,0.0,0.0,0.0,6.17,2.0,4.17
 https://engineerwala.com/oil-in-spark-plug-well/,0.0,0.0,0.0,,5.0,2.0,3.0,150.0,0.0,0.0,0.0,40.4,23.5,16.9
-https://engineerwala.com/which-side-is-the-brake/,0.0,0.0,0.0,,5.0,7.0,-2.0,-28.57,0.0,0.0,0.0,1.0,6.43,-5.43
+https://engineerwala.com/which-side-is-the-brake/,0.0,0.0,0.0,,5.0,5.0,0.0,0.0,0.0,0.0,0.0,1.0,4.0,-3.0
 https://engineerwala.com/about-us/,0.0,0.0,0.0,,3.0,2.0,1.0,50.0,0.0,0.0,0.0,4.33,6.5,-2.17
 https://engineerwala.com/airbag-warning-light/,0.0,0.0,0.0,,3.0,0.0,3.0,,0.0,0.0,0.0,20.33,0.0,20.33
 https://engineerwala.com/contact-us/,0.0,0.0,0.0,,3.0,2.0,1.0,50.0,0.0,0.0,0.0,5.67,2.5,3.17
