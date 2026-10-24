@@ -1,8 +1,8 @@
 page,current_clicks,previous_clicks,clicks_change,clicks_change_percent,current_impressions,previous_impressions,impressions_change,impressions_change_percent,current_ctr_percent,previous_ctr_percent,ctr_change_points,current_position,previous_position,position_change
-https://engineerwala.com/basic-car-door-parts/,0.0,2.0,-2.0,-100.0,15.0,20.0,-5.0,-25.0,0.0,10.0,-10.0,36.27,31.2,5.07
-https://engineerwala.com/oil-in-spark-plug-well/,0.0,0.0,0.0,,7.0,5.0,2.0,40.0,0.0,0.0,0.0,46.43,26.6,19.83
-https://engineerwala.com/which-side-is-the-brake/,0.0,0.0,0.0,,4.0,6.0,-2.0,-33.33,0.0,0.0,0.0,1.0,1.0,0.0
-https://engineerwala.com/types-of-cars/,0.0,0.0,0.0,,2.0,6.0,-4.0,-66.67,0.0,0.0,0.0,1.5,1.33,0.17
+https://engineerwala.com/basic-car-door-parts/,0.0,2.0,-2.0,-100.0,13.0,20.0,-7.0,-35.0,0.0,10.0,-10.0,35.54,30.7,4.84
+https://engineerwala.com/oil-in-spark-plug-well/,0.0,0.0,0.0,,9.0,4.0,5.0,125.0,0.0,0.0,0.0,49.33,33.0,16.33
+https://engineerwala.com/types-of-cars/,0.0,0.0,0.0,,2.0,5.0,-3.0,-60.0,0.0,0.0,0.0,1.5,1.2,0.3
+https://engineerwala.com/which-side-is-the-brake/,0.0,0.0,0.0,,2.0,8.0,-6.0,-75.0,0.0,0.0,0.0,1.0,1.0,0.0
 https://engineerwala.com/,0.0,0.0,0.0,,1.0,0.0,1.0,,0.0,0.0,0.0,1.0,0.0,1.0
 https://engineerwala.com/about-us/,0.0,0.0,0.0,,1.0,1.0,0.0,0.0,0.0,0.0,0.0,8.0,35.0,-27.0
 https://engineerwala.com/alternator-overcharging/,0.0,0.0,0.0,,1.0,0.0,1.0,,0.0,0.0,0.0,4.0,0.0,4.0
@@ -16,4 +16,3 @@ https://engineerwala.com/services/,0.0,0.0,0.0,,1.0,0.0,1.0,,0.0,0.0,0.0,2.0,0.0
 https://engineerwala.com/starter-relay-symptoms/,0.0,0.0,0.0,,1.0,0.0,1.0,,0.0,0.0,0.0,9.0,0.0,9.0
 https://engineerwala.com/types-of-bolts/,0.0,0.0,0.0,,1.0,0.0,1.0,,0.0,0.0,0.0,10.0,0.0,10.0
 https://engineerwala.com/bad-ignition-coil-symptoms/,0.0,0.0,0.0,,0.0,1.0,-1.0,-100.0,0.0,0.0,0.0,0.0,11.0,-11.0
-https://engineerwala.com/noise-when-turning-steering-wheel/,0.0,0.0,0.0,,0.0,1.0,-1.0,-100.0,0.0,0.0,0.0,0.0,1.0,-1.0
