@@ -1,24 +1,24 @@
 {
-  "generated_at": "2026-10-24T08:13:19Z",
+  "generated_at": "2026-10-25T08:32:02Z",
   "site_url": "https://engineerwala.com/",
   "permission_level": "siteFullUser",
   "data_state": "final",
   "final_data_delay_days": 3,
   "current_period": {
-    "start_date": "2026-10-15",
-    "end_date": "2026-10-21",
+    "start_date": "2026-10-16",
+    "end_date": "2026-10-22",
     "clicks": 0.0,
-    "impressions": 29.0,
+    "impressions": 27.0,
     "ctr_percent": 0.0,
-    "position": 34.97
+    "position": 35.19
   },
   "previous_period": {
-    "start_date": "2026-10-08",
-    "end_date": "2026-10-14",
+    "start_date": "2026-10-09",
+    "end_date": "2026-10-15",
     "clicks": 2.0,
-    "impressions": 41.0,
-    "ctr_percent": 4.88,
-    "position": 20.8
+    "impressions": 43.0,
+    "ctr_percent": 4.65,
+    "position": 21.12
   },
-  "page_count": 17
+  "page_count": 18
 }
