@@ -1,17 +1,17 @@
 {
-  "generated_at": "2026-11-24T13:58:46Z",
+  "generated_at": "2026-11-25T13:10:08Z",
   "site_url": "https://engineerwala.com/",
-  "run_status": "degraded",
+  "run_status": "healthy",
   "api_key_configured": true,
   "url_limit": 5,
   "selected_urls": 5,
   "total_tests": 10,
-  "successful_tests": 8,
-  "failed_tests": 2,
+  "successful_tests": 10,
+  "failed_tests": 0,
   "inp_available_tests": 0,
-  "inp_unavailable_tests": 8,
+  "inp_unavailable_tests": 10,
   "mobile": {
-    "average_performance_score": 100,
+    "average_performance_score": 99,
     "average_accessibility_score": 96,
     "average_best_practices_score": 100,
     "average_seo_score": 100,
@@ -24,16 +24,5 @@
     "average_seo_score": 100,
     "average_inp_ms": 0
   },
-  "errors": [
-    {
-      "url": "https://engineerwala.com/which-side-is-the-brake/",
-      "strategy": "desktop",
-      "message": "400 Client Error: Bad Request for url: https://www.googleapis.com/pagespeedonline/v5/runPagespeed?url=https%3A%2F%2Fengineerwala.com%2Fwhich-side-is-the-brake%2F&strategy=desktop&key=AIzaSyDhoD3_tYajyAM4RhEyEkk4Y60SW-ucaIU&category=performance&category=accessibility&category=best-practices&category=seo"
-    },
-    {
-      "url": "https://engineerwala.com/oil-in-coolant-reservoir/",
-      "strategy": "desktop",
-      "message": "400 Client Error: Bad Request for url: https://www.googleapis.com/pagespeedonline/v5/runPagespeed?url=https%3A%2F%2Fengineerwala.com%2Foil-in-coolant-reservoir%2F&strategy=desktop&key=AIzaSyDhoD3_tYajyAM4RhEyEkk4Y60SW-ucaIU&category=performance&category=accessibility&category=best-practices&category=seo"
-    }
-  ]
+  "errors": []
 }
