@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-11-27T12:42:12Z",
+  "generated_at": "2026-11-28T12:00:23Z",
   "site_url": "https://engineerwala.com/",
   "run_status": "healthy",
   "api_key_configured": true,
@@ -20,7 +20,7 @@
   "desktop": {
     "average_performance_score": 100,
     "average_accessibility_score": 96,
-    "average_best_practices_score": 100,
+    "average_best_practices_score": 98,
     "average_seo_score": 100,
     "average_inp_ms": 0
   },
